@@ -74,9 +74,9 @@
 
 ## Logs
 
-You can observer the logs from your Claude's log files (filename: mcp-server-DevAIoT.log)
+You can observer the logs (e.g., with tail) from your Claude's log files (filename: mcp-server-DevAIoT.log)
 
-/Users/nkm/Library/Logs/Claude
+(My logs go to /Users/nkm/Library/Logs/Claude, where yours?)
 
 
 
