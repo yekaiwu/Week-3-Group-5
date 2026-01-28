@@ -25,7 +25,7 @@
 
 - Python
     1. Check which Python version you have. The exceircise require Python 3.14 minumum. Use uv or some other for making sure you have at least this version Python
-    2. Install the dependencies (fastmcp, pyserial). (Depends how you run you python, e.g., uv pip install fastmcp pyserial)
+    2. Install the dependencies (fastmcp, pyserial). (Depends how you run you python, e.g., uv pip install -r requirements.txt)
     3. Configure:
         - Check the Arduino port from the Aruino IDE and set in in the main.py file on the Server (e.g., PORT='/dev/cu.usbmodem11201')
 
