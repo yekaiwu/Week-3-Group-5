@@ -13,25 +13,40 @@
 
 # Installing instructions
 
-- Claude
-    - Install Claude Desktop, unless you have one already. You do not need paid subscript - free version is enough for this assignment!
-
-- Python
-    1. Check which Python version you have. The exceircise require Python 3.14 minumum. Use uv or some other for making sure you have at least this version Python
-    2. Install the dependencies (fastmcp, pyserial). (Depends how you run you python, e.g., uv pip install fastmcp pyserial)
-
 - Arduino:
-    1. Install Arduino IDE
+    1. Install Arduino IDE and open the Arduino project
     2. Connect Arduino to your computer
-    3. You likely need to install some dependencies for your Arduino Studio: 
+    3. Install libraries for your Arduino Studio: 
         - Arduino_HS300x 
         - Arduino_LPS22HB
         - Arduino_APDS9960
         - Arduino_BMI270_BMM150
         - Arduino_JSON
 
-- Configure:
-    - Check the Arduino port from the Aruino IDE and set in in the main.py file (PORT='/dev/cu.usbmodem11201')
+- Python
+    1. Check which Python version you have. The exceircise require Python 3.14 minumum. Use uv or some other for making sure you have at least this version Python
+    2. Install the dependencies (fastmcp, pyserial). (Depends how you run you python, e.g., uv pip install fastmcp pyserial)
+    3. Configure:
+        - Check the Arduino port from the Aruino IDE and set in in the main.py file on the Server (e.g., PORT='/dev/cu.usbmodem11201')
+
+- Claude
+    - Install Claude Desktop, unless you have one already. You do not need paid subscript - free version is enough for this assignment!
+    - Edit your Claude's config file and add your MCP server: claude_desktop_config.json. You can find this via Claude's settings -> Developer -> Edit Config. The config depends on how you run your python. Here is an example with uv:
+    ```
+    {
+      "mcpServers": {
+        "DevAIoT": {
+          "command": "uv",
+          "args": [
+            "--directory",
+            "/Users/nkm/temp/DevAIoT_2026/week3/Server",
+            "run",
+            "main.py"
+          ]
+        }
+      }
+    }
+    ```
 
 
 - Open your code editor (e.g., Visual Studio Code) and start coding!
@@ -41,40 +56,21 @@
 
 **Your task is to**:
 
-1. Practice: Inspect main.py and implement blue LED control tool for MCP, and test via Claude
+1. Explore and practice: Inspect main.py and test it with Claude desktop. Practice by implementing blue LED control tool for MCP, and test it with Claude.
 
 2. Use your creativity:
-    - Design & implement your own tool
-    - Design outputs for the system
-    - Implement “a program” on Claude how to use your tool
+    - Design & implement *your own tool* or multiple tools
+    - Design outputs for the system. Consired how this affect when the user discusses with LM.
+    - "Program” on Claude: Come up with use cases for your tool(s).
 
 3. Document & present:
     - Explain what your tool does and how it can be used with Claude
+    - How should the return values and message be defined when you are communicating with LM?
+    - How to combine your tool with other tools?
+    - Can you actually "program" with LM
 
 
-Things to consider:
-- How should the return values and message be when you are communicating with LM?
 
-
-Edit your Claude's config file and add your MCP server: claude_desktop_config.json. You can find this via Claude's settings -> Developer -> Edit Config
-
-The config depends on how you run your python. Here is an example with uv:
-
-```
-{
-  "mcpServers": {
-    "DevAIoT": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/Users/nkm/temp/DevAIoT_2026/week3/Server",
-        "run",
-        "main.py"
-      ]
-    }
-  }
-}
-```
 
 ## Logs
 
@@ -87,4 +83,4 @@ You can observer the logs from your Claude's log files (filename: mcp-server-Dev
 
 ## Possible issues and solutions:
 
-- If you get serial port issue: 1) check (from Arduino Studio) that your port is correct, 2) make sure you use pyserial - not plain serial
+- If you get serial port issue: 1) check (from Arduino Studio) that your port is correct, 2) make sure you use pyserial - not plain serial (with uv, forcing reinstall may help: uv pip install --upgrade --force-reinstall pyserial)
