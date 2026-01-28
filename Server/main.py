@@ -204,11 +204,6 @@ ArduinoMCP = FastMCP('Arduino Servers')
 
 
 # @ArduinoMCP.tool is a python decorator which is wrapping our functions to be exposed to the MCP Client
-@ArduinoMCP.tool
-def blue_led_ON():
-    '''Turns on blue LED in the Arduino'''
-    board.blue_LED();  time.sleep(1)
-    return 'Blue LED ON'
 
 @ArduinoMCP.tool
 def red_led_ON():
@@ -250,6 +245,11 @@ def get_current_accelerometer():
     else:
         return None
 
+
+# TODO: Implement blue led
+
+
+# Can be used for testing and debugging
 def test():
     '''Gets the most recent temperature from the Arduino'''
     state = board.get_state()

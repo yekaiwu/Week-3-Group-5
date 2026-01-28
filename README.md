@@ -23,8 +23,15 @@
 
 **Your task is to**:
 
-1. Implement X and its counter part in main.py
-2. 
+1. Practice: Inspect main.py and implement blue LED control tool for MCP, and test via Claude
+
+2. Use your creativity:
+2.1. Design & implement your own tool
+2.2. Design outputs for the system
+2.3. Implement “a program” on Claude how to use your tool
+
+3. Document & present:
+- Explain what your tool does and how it can be used with Claude
 
 
 Things to consider:
@@ -33,6 +40,7 @@ Things to consider:
 
 Edit your Claude's config file and add your MCP server: claude_desktop_config.json. You can find this via Claude's settings -> Developer -> Edit Config
 
+```
 {
   "mcpServers": {
     "DevAIoT": {
@@ -46,7 +54,7 @@ Edit your Claude's config file and add your MCP server: claude_desktop_config.js
     }
   }
 }
-
+```
 
 ## Logs
 
