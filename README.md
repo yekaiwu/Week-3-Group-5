@@ -1,7 +1,7 @@
 # What you get:
 - Arduino Nano 33 Sense Rev2 board
 - main.py file
-- Arduino Studio project which acts as a firmware
+- Arduino IDE project which acts as a firmware
 
 # What you need:
 - Laptop
@@ -16,7 +16,7 @@
 - Arduino:
     1. Install Arduino IDE and open the Arduino project
     2. Connect Arduino to your computer
-    3. Install libraries for your Arduino Studio: 
+    3. Install libraries for your Arduino IDE: 
         - Arduino_HS300x 
         - Arduino_LPS22HB
         - Arduino_APDS9960
@@ -83,4 +83,4 @@ You can observer the logs (e.g., with tail) from your Claude's log files (filena
 
 ## Possible issues and solutions:
 
-- If you get serial port issue: 1) check (from Arduino Studio) that your port is correct, 2) make sure you use pyserial - not plain serial (with uv, forcing reinstall may help: uv pip install --upgrade --force-reinstall pyserial)
+- If you get serial port issue: 1) check (from Arduino IDE) that your port is correct, 2) make sure you use pyserial - not plain serial (with uv, forcing reinstall may help: uv pip install --upgrade --force-reinstall pyserial)
