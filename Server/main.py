@@ -125,9 +125,8 @@ class Nano33SenseRev2:
     def red_LED(self) -> None:
         self.rgb(255, 0, 0)
 
-    def blue_LED(self) -> None:
-        self.rgb(0, 0, 255)
-
+    # TODO: Implement blue led
+    
     def yellow_LED(self) -> None:
         self.rgb(255, 255, 0)
 
@@ -266,7 +265,6 @@ if __name__ == "__main__":
         
         # For demonstrating that Arduino is connected
         board.red_LED(); time.sleep(1)
-        board.blue_LED();  time.sleep(1)
         board.yellow_LED(); time.sleep(1)
         board.off()
         
