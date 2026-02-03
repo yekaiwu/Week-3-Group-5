@@ -1,4 +1,56 @@
-/* Reset & Base Styles */
+/* ============================================
+   PLANT HEALTH MONITOR - MODERN AESTHETIC DESIGN
+   Inspired by plant care apps & green UI designs
+   ============================================ */
+
+/* === ROOT VARIABLES === */
+:root {
+    /* Plant-themed Color Palette */
+    --primary-green: #4CAF50;
+    --dark-green: #2E7D32;
+    --light-green: #81C784;
+    --mint: #A5D6A7;
+    --cream: #F1F8E9;
+    --leaf-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 15%, #4CAF50 100%);
+    --plant-gradient: linear-gradient(135deg, #43A047 0%, #66BB6A 100%);
+    --water-gradient: linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%);
+
+    /* Neutral Colors */
+    --white: #FFFFFF;
+    --off-white: #FAFAFA;
+    --light-gray: #F5F5F5;
+    --gray: #E0E0E0;
+    --dark-gray: #757575;
+    --text-dark: #2C3E50;
+    --text-light: #6B7280;
+
+    /* Status Colors */
+    --success: #4CAF50;
+    --warning: #FF9800;
+    --danger: #F44336;
+    --info: #2196F3;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+}
+
+/* === RESET & BASE === */
 * {
     margin: 0;
     padding: 0;
@@ -6,47 +58,55 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(to bottom, var(--cream), var(--off-white));
+    color: var(--text-dark);
     line-height: 1.6;
-    color: #333;
-    background: #f5f5f5;
-    padding: 0;
-    margin: 0;
+    min-height: 100vh;
 }
 
-/* Screen Management */
+/* === SCREEN MANAGEMENT === */
 .screen {
     display: none;
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 .screen.active {
     display: block;
 }
 
-/* Header */
-.header {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* === HEADER BAR === */
+.header-bar {
+    background: var(--white);
+    padding: var(--spacing-md) var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--primary-green);
 }
 
 .system-name {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-.device-status {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--dark-green);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.25rem;
+}
+
+.header-right {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.device-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: var(--light-gray);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
 }
 
 .status-icon {
@@ -56,318 +116,515 @@ body {
 .status-text {
     font-size: 0.9rem;
     font-weight: 600;
+    color: var(--text-dark);
 }
 
-.last-reading {
+.last-reading-badge {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-light);
 }
 
-/* Plant Profile Card */
-.plant-profile {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* === DASHBOARD LAYOUT === */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
-.plant-photo-container {
+/* === LEFT SIDEBAR: PLANT PROFILE === */
+.plant-sidebar {
+    position: sticky;
+    top: var(--spacing-xl);
+    height: fit-content;
+}
+
+.plant-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.plant-photo-wrapper {
+    position: relative;
     width: 100%;
-    max-width: 300px;
-    margin: 0 auto 1rem;
+    aspect-ratio: 1;
+    overflow: hidden;
 }
 
 .plant-photo {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
+    height: 100%;
     object-fit: cover;
-    aspect-ratio: 4/3;
+    transition: transform 0.3s ease;
 }
 
-.plant-details {
-    text-align: center;
-    margin-bottom: 1rem;
+.plant-card:hover .plant-photo {
+    transform: scale(1.05);
+}
+
+.btn-edit-overlay {
+    position: absolute;
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.btn-edit-overlay:hover {
+    background: var(--primary-green);
+    color: var(--white);
+    transform: scale(1.05);
+}
+
+.plant-info {
+    padding: var(--spacing-lg);
 }
 
 .plant-name {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
+    color: var(--dark-green);
+    margin-bottom: var(--spacing-xs);
 }
 
 .plant-nickname {
-    color: #666;
-    font-weight: 400;
+    font-size: 1rem;
+    color: var(--text-light);
     font-style: italic;
+    margin-bottom: var(--spacing-md);
 }
 
-.plant-meta {
+.plant-meta-tags {
     display: flex;
-    justify-content: center;
-    gap: 1rem;
+    gap: var(--spacing-sm);
     flex-wrap: wrap;
 }
 
-.plant-type,
-.plant-age {
-    font-size: 0.9rem;
-    color: #555;
-    padding: 0.25rem 0.75rem;
-    background: #f0f0f0;
-    border-radius: 20px;
+.meta-tag {
+    background: var(--cream);
+    color: var(--dark-green);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
-.btn-edit {
-    width: 100%;
-    padding: 0.75rem 1.5rem;
-    background: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
+/* === MAIN CONTENT === */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
 }
 
-.btn-edit:hover {
-    background: #2980b9;
+/* === TOP ROW: RECOMMENDATION + WATERING === */
+.top-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--spacing-lg);
 }
 
-/* Hero Recommendation Section */
-.hero-recommendation {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    padding: 2rem 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    text-align: center;
+/* Recommendation Card */
+.recommendation-card {
+    background: var(--leaf-gradient);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+.recommendation-card::before {
+    content: '🌿';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    font-size: 10rem;
+    opacity: 0.1;
+}
+
+.card-content {
+    position: relative;
+    z-index: 1;
 }
 
 .status-emoticon {
-    margin-bottom: 1rem;
+    text-align: center;
+    margin-bottom: var(--spacing-md);
 }
 
-.emoticon-large {
-    font-size: 4rem;
+.emoticon-xl {
+    font-size: 5rem;
     display: block;
+    animation: float 3s ease-in-out infinite;
+    transition: all 0.5s ease;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .action-label {
     font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+    transition: all 0.5s ease;
 }
 
 .advice-text {
     font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 0.75rem;
+    line-height: 1.7;
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+    transition: all 0.5s ease;
 }
 
 .context-note {
     font-size: 0.9rem;
     opacity: 0.9;
     font-style: italic;
+    text-align: center;
+    transition: all 0.5s ease;
 }
 
 .warning-banner {
-    background: #e74c3c;
-    color: #fff;
-    padding: 1rem;
-    margin-top: 1rem;
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-md);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-weight: 600;
+    gap: var(--spacing-sm);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .warning-banner.hidden {
     display: none;
 }
 
-.warning-icon {
-    font-size: 1.5rem;
-}
-
-/* Watering Prediction */
-.watering-prediction {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.section-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #3498db;
-}
-
-.watering-info {
+/* Watering Card */
+.watering-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
 }
 
-.watering-item {
+.card-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+.watering-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.watering-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
+    padding: var(--spacing-md);
+    background: var(--light-gray);
+    border-radius: var(--radius-md);
+}
+
+.watering-row.highlight {
+    background: var(--water-gradient);
+    color: var(--white);
 }
 
 .watering-label {
-    font-weight: 600;
-    color: #555;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .watering-value {
     font-size: 1rem;
-    color: #2c3e50;
-    font-weight: 700;
+    font-weight: 600;
+    transition: all 0.5s ease;
 }
 
-.evaporation-info {
-    margin-top: 0.5rem;
-    padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 6px;
+.watering-countdown {
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: all 0.5s ease;
+}
+
+.evaporation-box {
+    background: var(--cream);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin: var(--spacing-md) 0;
 }
 
 .evaporation-text {
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 0.85rem;
+    color: var(--text-light);
 }
 
-/* Sensor Grid */
+.btn-secondary {
+    background: var(--primary-green);
+    color: var(--white);
+    border: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* === SENSOR SECTION === */
+.sensor-section {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.section-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
 .sensor-grid {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.sensor-cards {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
 }
 
 .sensor-card {
-    background: #f8f9fa;
-    padding: 1.25rem;
-    border-radius: 6px;
-    border-left: 4px solid #3498db;
+    background: var(--light-gray);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.sensor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.sensor-card.soil {
+    border-color: #8BC34A;
+}
+
+.sensor-card.temp {
+    border-color: #FF9800;
+}
+
+.sensor-card.humidity {
+    border-color: #2196F3;
+}
+
+.sensor-card.light {
+    border-color: #FFC107;
 }
 
 .sensor-icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 3rem;
+    margin-bottom: var(--spacing-sm);
 }
 
-.sensor-title {
-    font-size: 1rem;
+.sensor-data {
+    width: 100%;
+}
+
+.sensor-name {
+    font-size: 0.95rem;
     font-weight: 600;
-    color: #555;
-    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-xs);
 }
 
 .sensor-value {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.25rem;
+    color: var(--dark-green);
+    margin-bottom: var(--spacing-xs);
+    transition: all 0.5s ease;
 }
 
-.sensor-reference {
-    font-size: 0.85rem;
-    color: #666;
+.sensor-ref {
+    font-size: 0.8rem;
+    color: var(--text-light);
     font-style: italic;
+    transition: all 0.5s ease;
 }
 
-/* Historical Section */
-.historical-section {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* === MODALS === */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-xl);
 }
 
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    max-width: 1200px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--gray);
+}
+
+.modal-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+.btn-close {
+    background: var(--light-gray);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close:hover {
+    background: var(--danger);
+    color: var(--white);
+    transform: rotate(90deg);
+}
+
+/* Time Filter */
 .time-filter {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
 }
 
 .filter-btn {
     flex: 1;
-    min-width: 100px;
-    padding: 0.5rem 1rem;
-    background: #f0f0f0;
-    color: #555;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--light-gray);
     border: 2px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
 .filter-btn.active {
-    background: #3498db;
-    color: #fff;
-    border-color: #2980b9;
+    background: var(--plant-gradient);
+    color: var(--white);
+    border-color: var(--dark-green);
 }
 
 .filter-btn:hover {
-    background: #e0e0e0;
+    transform: translateY(-2px);
 }
 
-.filter-btn.active:hover {
-    background: #2980b9;
-}
-
+/* Charts */
 .charts-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl);
 }
 
 .chart-wrapper {
-    position: relative;
+    background: var(--light-gray);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
 }
 
 .chart-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-md);
 }
 
 canvas {
     width: 100% !important;
-    max-height: 250px !important;
+    max-height: 300px !important;
 }
 
 .no-data {
     text-align: center;
-    padding: 2rem;
-    color: #999;
+    padding: var(--spacing-xl);
+    color: var(--text-light);
     font-style: italic;
 }
 
@@ -376,63 +633,65 @@ canvas {
 }
 
 /* Watering Log */
-.watering-log {
-    margin-top: 2rem;
-}
-
-.subsection-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 1rem;
+.watering-log-container {
+    max-height: 600px;
+    overflow-y: auto;
 }
 
 .watering-list {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 }
 
 .watering-list li {
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border-left: 4px solid #27ae60;
+    background: var(--light-gray);
+    border-left: 4px solid var(--primary-green);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    transition: all 0.3s ease;
+}
+
+.watering-list li:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
 }
 
 .watering-timestamp {
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--dark-green);
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--spacing-xs);
 }
 
 .watering-amount {
-    color: #555;
+    color: var(--text-dark);
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--spacing-xs);
 }
 
 .watering-notes {
-    color: #666;
+    color: var(--text-light);
     font-style: italic;
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--spacing-xs);
 }
 
 .watering-sensor-data {
     font-size: 0.85rem;
-    color: #777;
+    color: var(--text-light);
     display: block;
 }
 
-/* Loading Spinner */
+/* === LOADING SPINNER === */
 .loading-spinner {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.3);
+    background: rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -443,11 +702,11 @@ canvas {
     display: none;
 }
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
+.spinner-leaf {
+    width: 60px;
+    height: 60px;
+    border: 5px solid var(--light-green);
+    border-top-color: var(--dark-green);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -457,22 +716,63 @@ canvas {
     100% { transform: rotate(360deg); }
 }
 
-/* Plant Configuration Screen */
-.config-section {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* === CONFIG SCREEN === */
+.config-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
 }
 
+.config-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.btn-back {
+    background: transparent;
+    border: none;
+    color: var(--primary-green);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: var(--spacing-sm) 0;
+    margin-bottom: var(--spacing-md);
+    transition: color 0.3s ease;
+}
+
+.btn-back:hover {
+    color: var(--dark-green);
+}
+
+.config-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-green);
+}
+
+.config-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.config-form-section,
+.care-sheet-section {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+/* Form Styles */
 .plant-form {
-    max-width: 600px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-group.hidden {
@@ -480,35 +780,37 @@ canvas {
 }
 
 .form-label {
-    display: block;
     font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.95rem;
 }
 
 .required {
-    color: #e74c3c;
+    color: var(--danger);
 }
 
 .form-input,
 .form-select {
     width: 100%;
-    padding: 0.75rem;
-    border: 2px solid #ddd;
-    border-radius: 6px;
+    padding: var(--spacing-md);
+    border: 2px solid var(--gray);
+    border-radius: var(--radius-md);
     font-size: 1rem;
-    transition: border-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
 }
 
 .form-input:focus,
 .form-select:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
 }
 
 .age-input-group {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--spacing-sm);
 }
 
 .age-input-group .form-input {
@@ -520,15 +822,14 @@ canvas {
 }
 
 .photo-preview-container {
-    margin-top: 1rem;
+    margin-top: var(--spacing-md);
 }
 
 .photo-preview {
     width: 100%;
     max-width: 300px;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
 }
 
 .photo-preview.hidden {
@@ -537,79 +838,58 @@ canvas {
 
 .form-help {
     display: block;
-    margin-top: 0.25rem;
+    margin-top: var(--spacing-xs);
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-light);
 }
 
 .form-actions {
     display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }
 
 .btn {
     flex: 1;
-    padding: 0.75rem 1.5rem;
+    padding: var(--spacing-md) var(--spacing-xl);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
 }
 
 .btn-primary {
-    background: #27ae60;
-    color: #fff;
+    background: var(--plant-gradient);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-    background: #229954;
-}
-
-.btn-secondary {
-    background: #95a5a6;
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background: #7f8c8d;
-}
-
-.btn-back {
-    background: transparent;
-    border: none;
-    color: #3498db;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.btn-back:hover {
-    color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .form-message {
-    padding: 1rem;
-    border-radius: 6px;
-    margin-top: 1rem;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
     text-align: center;
-    font-weight: 600;
+    font-weight: 500;
+    margin-top: var(--spacing-md);
 }
 
 .form-message.success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 2px solid #4CAF50;
 }
 
 .form-message.error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: #FFEBEE;
+    color: #C62828;
+    border: 2px solid #F44336;
 }
 
 .form-message.hidden {
@@ -617,99 +897,83 @@ canvas {
 }
 
 /* Care Sheet */
-.care-sheet-section {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
 .care-sheet-card {
-    max-width: 800px;
-    margin: 0 auto;
+    position: sticky;
+    top: var(--spacing-xl);
 }
 
 .care-sheet-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #27ae60;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--primary-green);
 }
 
 .care-sheet-content {
     font-size: 1rem;
     line-height: 1.8;
-    color: #555;
+    color: var(--text-dark);
     white-space: pre-line;
 }
 
-/* Responsive Design - Tablet */
-@media (min-width: 768px) {
-    .screen {
-        padding: 1.5rem;
+/* === RESPONSIVE DESIGN === */
+
+/* Tablet */
+@media (max-width: 1200px) {
+    .dashboard-layout {
+        grid-template-columns: 280px 1fr;
+        gap: var(--spacing-lg);
     }
 
-    .sensor-cards {
+    .sensor-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .plant-photo-container {
-        max-width: 400px;
-    }
-
-    .form-actions {
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
-/* Responsive Design - Desktop */
-@media (min-width: 1024px) {
-    .screen {
-        padding: 2rem;
-    }
-
-    .sensor-cards {
-        grid-template-columns: repeat(4, 1fr);
     }
 
     .charts-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
+        grid-template-columns: 1fr;
     }
 
-    .plant-profile {
-        display: grid;
-        grid-template-columns: 300px 1fr auto;
-        gap: 2rem;
-        align-items: center;
-    }
-
-    .plant-photo-container {
-        margin: 0;
-    }
-
-    .plant-details {
-        text-align: left;
-        margin-bottom: 0;
-    }
-
-    .plant-meta {
-        justify-content: flex-start;
-    }
-
-    .btn-edit {
-        width: auto;
-        min-width: 200px;
+    .config-layout {
+        grid-template-columns: 1fr;
     }
 }
 
-/* Utility Classes */
+/* Mobile */
+@media (max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .plant-sidebar {
+        position: static;
+    }
+
+    .top-row {
+        grid-template-columns: 1fr;
+    }
+
+    .sensor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-bar {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .header-right {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .modal-content {
+        padding: var(--spacing-md);
+    }
+}
+
+/* === UTILITY CLASSES === */
 .hidden {
     display: none !important;
 }

@@ -1,3 +1,5 @@
+// ===== PLANT HEALTH MONITOR - APPLICATION LOGIC =====
+
 // Global state
 let plantData = null;
 let charts = {};
@@ -5,31 +7,40 @@ let currentFilter = '7d';
 let refreshInterval = null;
 
 // API Configuration
-const API_BASE_URL = '/api'; // Change this to your backend URL
+const API_BASE_URL = '/api';
 const USE_MOCK_DATA = true; // Set to false when backend is ready
 
-// Initialize app
+// ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
 });
 
 async function initializeApp() {
-    // Set up event listeners
     setupEventListeners();
-
-    // Load initial data
-    await fetchPlantData();
-
-    // Start auto-refresh
+    await fetchPlantData(true); // Show spinner on initial load
     startAutoRefresh();
 }
 
-// Event Listeners
+// ===== EVENT LISTENERS =====
 function setupEventListeners() {
     // Navigation
     document.getElementById('editPlantBtn').addEventListener('click', showConfigScreen);
     document.getElementById('backBtn').addEventListener('click', showHomeScreen);
     document.getElementById('cancelBtn').addEventListener('click', showHomeScreen);
+
+    // Modal controls
+    document.getElementById('viewHistoricalDataBtn').addEventListener('click', openHistoricalModal);
+    document.getElementById('closeHistoricalBtn').addEventListener('click', closeHistoricalModal);
+    document.getElementById('viewWateringHistoryBtn').addEventListener('click', openWateringModal);
+    document.getElementById('closeWateringBtn').addEventListener('click', closeWateringModal);
+
+    // Close modals on background click
+    document.getElementById('historicalModal').addEventListener('click', (e) => {
+        if (e.target.id === 'historicalModal') closeHistoricalModal();
+    });
+    document.getElementById('wateringModal').addEventListener('click', (e) => {
+        if (e.target.id === 'wateringModal') closeWateringModal();
+    });
 
     // Time filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -57,7 +68,7 @@ function setupEventListeners() {
     document.getElementById('plantConfigForm').addEventListener('submit', handleFormSubmit);
 }
 
-// Screen Navigation
+// ===== SCREEN NAVIGATION =====
 function showHomeScreen() {
     document.getElementById('homeScreen').classList.add('active');
     document.getElementById('configScreen').classList.remove('active');
@@ -69,9 +80,32 @@ function showConfigScreen() {
     populateConfigForm();
 }
 
-// Data Fetching
-async function fetchPlantData() {
-    showLoading(true);
+// ===== MODAL CONTROLS =====
+function openHistoricalModal() {
+    document.getElementById('historicalModal').classList.remove('hidden');
+    // Render charts when modal opens
+    renderCharts();
+}
+
+function closeHistoricalModal() {
+    document.getElementById('historicalModal').classList.add('hidden');
+}
+
+function openWateringModal() {
+    document.getElementById('wateringModal').classList.remove('hidden');
+    renderWateringLog();
+}
+
+function closeWateringModal() {
+    document.getElementById('wateringModal').classList.add('hidden');
+}
+
+// ===== DATA FETCHING =====
+async function fetchPlantData(showSpinner = false) {
+    // Only show loading spinner on initial load, not on auto-refresh
+    if (showSpinner) {
+        showLoading(true);
+    }
 
     try {
         let data;
@@ -100,11 +134,13 @@ async function fetchPlantData() {
             showError('Failed to load plant data. Please check your connection.');
         }
     } finally {
-        showLoading(false);
+        if (showSpinner) {
+            showLoading(false);
+        }
     }
 }
 
-// Render Dashboard
+// ===== DASHBOARD RENDERING =====
 function renderDashboard() {
     if (!plantData) return;
 
@@ -113,8 +149,6 @@ function renderDashboard() {
     renderRecommendation();
     renderWateringPrediction();
     renderSensorData();
-    renderCharts();
-    renderWateringLog();
 }
 
 // Render Header
@@ -135,7 +169,7 @@ function renderHeader() {
 
     // Last reading timestamp
     const lastReading = new Date(device.lastReading);
-    document.getElementById('lastReadingText').textContent = `Last update: ${formatTimestamp(lastReading)}`;
+    document.getElementById('lastReadingText').textContent = formatTimestamp(lastReading);
 }
 
 // Render Plant Profile
@@ -147,12 +181,14 @@ function renderPlantProfile() {
     plantPhoto.src = plant.photoUrl || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text y="50" font-size="60">🌱</text></svg>';
     plantPhoto.alt = plant.photoAlt || 'Plant photo';
 
-    // Plant name and nickname
+    // Plant name
     document.getElementById('plantName').textContent = plant.name;
+
+    // Plant nickname
     const nicknameElement = document.getElementById('plantNickname');
     if (plant.nickname) {
-        nicknameElement.textContent = `(${plant.nickname})`;
-        nicknameElement.style.display = 'inline';
+        nicknameElement.textContent = `"${plant.nickname}"`;
+        nicknameElement.style.display = 'block';
     } else {
         nicknameElement.style.display = 'none';
     }
@@ -214,7 +250,7 @@ function renderWateringPrediction() {
     updateCountdown();
 
     // Watering amount
-    document.getElementById('wateringAmount').textContent = `${llmInsights.wateringAmount} of room-temperature water`;
+    document.getElementById('wateringAmount').textContent = llmInsights.wateringAmount;
 
     // Evaporation rate
     document.getElementById('evaporationRate').textContent =
@@ -223,6 +259,8 @@ function renderWateringPrediction() {
 
 // Update Countdown Timer
 function updateCountdown() {
+    if (!plantData) return;
+
     const { llmInsights } = plantData;
     const nextWatering = new Date(llmInsights.nextWateringTime);
     const now = new Date();
@@ -238,11 +276,11 @@ function updateCountdown() {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
     let countdown = '';
-    if (days > 0) countdown += `${days} day${days > 1 ? 's' : ''}, `;
-    if (hours > 0 || days > 0) countdown += `${hours} hour${hours !== 1 ? 's' : ''}`;
-    if (days === 0 && hours === 0) countdown += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+    if (days > 0) countdown += `${days}d `;
+    if (hours > 0 || days > 0) countdown += `${hours}h `;
+    if (days === 0 && hours === 0) countdown += `${minutes}m`;
 
-    document.getElementById('countdownTimer').textContent = countdown + ' left';
+    document.getElementById('countdownTimer').textContent = countdown.trim();
 }
 
 // Render Sensor Data
@@ -270,7 +308,7 @@ function renderSensorData() {
     document.getElementById('lightLevelRef').textContent = sensorReadings.lightLevel.llmReference;
 }
 
-// Render Charts
+// ===== CHARTS RENDERING =====
 function renderCharts() {
     if (!plantData || !plantData.historicalData) return;
 
@@ -340,11 +378,16 @@ function renderChart(canvasId, data, label, noDataId) {
             datasets: [{
                 label: label,
                 data: data.map(d => d.value),
-                borderColor: '#000',
-                backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                borderWidth: 2,
-                tension: 0.1,
-                fill: true
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#4CAF50',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
@@ -353,6 +396,13 @@ function renderChart(canvasId, data, label, noDataId) {
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(46, 125, 50, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    padding: 12,
+                    cornerRadius: 8
                 }
             },
             scales: {
@@ -360,14 +410,28 @@ function renderChart(canvasId, data, label, noDataId) {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Time'
+                        text: 'Time',
+                        color: '#2C3E50',
+                        font: {
+                            weight: 600
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
                     }
                 },
                 y: {
                     display: true,
                     title: {
                         display: true,
-                        text: label
+                        text: label,
+                        color: '#2C3E50',
+                        font: {
+                            weight: 600
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
                     }
                 }
             }
@@ -388,8 +452,10 @@ function updateTimeFilter(activeBtn) {
     activeBtn.classList.add('active');
 }
 
-// Render Watering Log
+// ===== WATERING LOG =====
 function renderWateringLog() {
+    if (!plantData || !plantData.historicalData) return;
+
     const { wateringLogs } = plantData.historicalData;
     const listElement = document.getElementById('wateringLogList');
     const noDataElement = document.getElementById('noDataWateringLog');
@@ -404,7 +470,7 @@ function renderWateringLog() {
 
     listElement.innerHTML = wateringLogs.map(log => `
         <li>
-            <span class="watering-timestamp">${formatDateTime(new Date(log.timestamp))}</span>
+            <span class="watering-timestamp">💧 ${formatDateTime(new Date(log.timestamp))}</span>
             <span class="watering-amount">Amount: ${log.amount}</span>
             ${log.notes ? `<span class="watering-notes">Notes: ${log.notes}</span>` : ''}
             <span class="watering-sensor-data">
@@ -415,7 +481,7 @@ function renderWateringLog() {
     `).join('');
 }
 
-// Render Care Sheet
+// ===== CARE SHEET =====
 function renderCareSheet() {
     if (!plantData) return;
 
@@ -425,7 +491,7 @@ function renderCareSheet() {
     document.getElementById('careSheetContent').textContent = llmCareSheet.content;
 }
 
-// Populate Config Form
+// ===== CONFIG FORM =====
 function populateConfigForm() {
     if (!plantData) return;
 
@@ -512,8 +578,6 @@ async function handleFormSubmit(e) {
     // Handle photo upload
     const photoFile = document.getElementById('inputPlantPhoto').files[0];
     if (photoFile) {
-        // In a real app, you would upload the file to the backend
-        // For now, we'll just simulate it
         formData.photo = photoFile;
     }
 
@@ -536,11 +600,11 @@ async function handleFormSubmit(e) {
             }
         }
 
-        showFormSuccess(`Plant details saved! LLM advice updated for your ${formData.name}.`);
+        showFormSuccess(`Plant details saved! LLM advice updated for your ${formData.name}. 🌿`);
 
         // Refresh data and return to home after 2 seconds
         setTimeout(async () => {
-            await fetchPlantData();
+            await fetchPlantData(true); // Show spinner for user-initiated refresh
             showHomeScreen();
         }, 2000);
 
@@ -567,7 +631,7 @@ async function simulateConfigSave(formData) {
     });
 }
 
-// Form Messages
+// ===== FORM MESSAGES =====
 function showFormSuccess(message) {
     const element = document.getElementById('formSuccess');
     element.textContent = message;
@@ -585,22 +649,22 @@ function hideFormMessages() {
     document.getElementById('formError').classList.add('hidden');
 }
 
-// Auto-Refresh
+// ===== AUTO-REFRESH =====
 function startAutoRefresh() {
-    // Update countdown every second
+    // Update countdown every second (smooth countdown)
     setInterval(() => {
         if (plantData && document.getElementById('homeScreen').classList.contains('active')) {
             updateCountdown();
         }
     }, 1000);
 
-    // Refresh data every 1 second
+    // Refresh data every 10 seconds (smooth background updates without loading spinner)
     refreshInterval = setInterval(async () => {
-        await fetchPlantData();
-    }, 1000);
+        await fetchPlantData(false); // Don't show spinner on auto-refresh
+    }, 10000);
 }
 
-// Loading Spinner
+// ===== LOADING & ERRORS =====
 function showLoading(show) {
     const spinner = document.getElementById('loadingSpinner');
     if (show) {
@@ -610,12 +674,11 @@ function showLoading(show) {
     }
 }
 
-// Error Display
 function showError(message) {
     alert(message); // Simple error display for MVP
 }
 
-// Utility Functions
+// ===== UTILITY FUNCTIONS =====
 function formatTimestamp(date) {
     const now = new Date();
     const diffMs = now - date;
@@ -624,7 +687,7 @@ function formatTimestamp(date) {
     if (diffMins < 1) {
         return 'Just now';
     } else if (diffMins < 60) {
-        return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+        return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
     } else if (diffMins < 1440) {
         const hours = Math.floor(diffMins / 60);
         return `${hours} hour${hours > 1 ? 's' : ''} ago`;
@@ -637,7 +700,6 @@ function formatDateTime(date) {
     const options = {
         month: 'short',
         day: 'numeric',
-        year: 'numeric',
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
