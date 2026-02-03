@@ -1,0 +1,112 @@
+{
+  "device": {
+    "id": "arduino-nano-001",
+    "status": "online",
+    "lastReading": "2026-02-03T14:30:00Z"
+  },
+  "plant": {
+    "name": "Peace Lily",
+    "nickname": "Lily",
+    "type": "tropical",
+    "age": 12,
+    "ageUnit": "months",
+    "photoUrl": "https://images.unsplash.com/photo-1593482892290-f54927ae1bb3",
+    "photoAlt": "Photo of Peace Lily named Lily"
+  },
+  "sensorReadings": {
+    "soilMoisture": {
+      "percentage": 30,
+      "unit": "%",
+      "llmReference": "30% = Normal for Peace Lily (tropical plant)"
+    },
+    "airTemperature": {
+      "value": 24,
+      "unit": "°C",
+      "llmReference": "24°C = Ideal temp for Peace Lily"
+    },
+    "airHumidity": {
+      "percentage": 65,
+      "unit": "%",
+      "llmReference": "65% = Optimal air humidity for Peace Lily"
+    },
+    "lightLevel": {
+      "percentage": 55,
+      "unit": "%",
+      "llmReference": "55% = Ideal indirect light for Peace Lily"
+    }
+  },
+  "llmInsights": {
+    "evaporationRate": 2.5,
+    "evaporationUnit": "%/day",
+    "nextWateringTime": "2026-02-05T08:00:00Z",
+    "wateringAmount": "200ml",
+    "contextNote": "30% soil moisture is normal for a Peace Lily at 24°C—evaporation is slow, so no immediate watering needed."
+  },
+  "recommendation": {
+    "statusEmoticon": "😊",
+    "action": "DO_NOT_WATER",
+    "humanFriendly": "No need to water your Peace Lily yet! It's in great shape—water 200ml around Feb 5th (8 AM) for best results.",
+    "warning": null
+  },
+  "llmCareSheet": {
+    "title": "Peace Lily (Spathiphyllum) Care Sheet",
+    "content": "1. Light: Indirect bright light (50-60% light level) — avoid direct sunlight.\n\n2. Water: 200ml every 5-7 days when soil moisture hits 20-30%.\n\n3. Temperature: 20-28°C (avoid cold drafts below 15°C).\n\n4. Humidity: 60-70% air humidity — mist leaves weekly for extra care.\n\n5. Note: Over-watering is the #1 cause of root rot for this tropical plant."
+  },
+  "historicalData": {
+    "timeFilterOptions": ["7d", "30d", "all"],
+    "sensorLogs": {
+      "soilMoisture": [
+        { "timestamp": "2026-02-01T09:00:00Z", "value": 25 },
+        { "timestamp": "2026-02-01T15:00:00Z", "value": 26 },
+        { "timestamp": "2026-02-02T09:00:00Z", "value": 27 },
+        { "timestamp": "2026-02-02T15:00:00Z", "value": 28 },
+        { "timestamp": "2026-02-03T09:00:00Z", "value": 29 },
+        { "timestamp": "2026-02-03T14:30:00Z", "value": 30 }
+      ],
+      "airTemperature": [
+        { "timestamp": "2026-02-01T09:00:00Z", "value": 23 },
+        { "timestamp": "2026-02-01T15:00:00Z", "value": 24 },
+        { "timestamp": "2026-02-02T09:00:00Z", "value": 22 },
+        { "timestamp": "2026-02-02T15:00:00Z", "value": 25 },
+        { "timestamp": "2026-02-03T09:00:00Z", "value": 23 },
+        { "timestamp": "2026-02-03T14:30:00Z", "value": 24 }
+      ],
+      "airHumidity": [
+        { "timestamp": "2026-02-01T09:00:00Z", "value": 63 },
+        { "timestamp": "2026-02-01T15:00:00Z", "value": 62 },
+        { "timestamp": "2026-02-02T09:00:00Z", "value": 64 },
+        { "timestamp": "2026-02-02T15:00:00Z", "value": 66 },
+        { "timestamp": "2026-02-03T09:00:00Z", "value": 65 },
+        { "timestamp": "2026-02-03T14:30:00Z", "value": 65 }
+      ],
+      "lightLevel": [
+        { "timestamp": "2026-02-01T09:00:00Z", "value": 52 },
+        { "timestamp": "2026-02-01T15:00:00Z", "value": 58 },
+        { "timestamp": "2026-02-02T09:00:00Z", "value": 50 },
+        { "timestamp": "2026-02-02T15:00:00Z", "value": 60 },
+        { "timestamp": "2026-02-03T09:00:00Z", "value": 53 },
+        { "timestamp": "2026-02-03T14:30:00Z", "value": 55 }
+      ]
+    },
+    "wateringLogs": [
+      {
+        "timestamp": "2026-02-01T09:15:00Z",
+        "amount": "200ml",
+        "notes": "Filtered water",
+        "sensorDataAtWatering": {
+          "soilMoisture": 25,
+          "airTemp": 23
+        }
+      },
+      {
+        "timestamp": "2026-01-27T10:30:00Z",
+        "amount": "200ml",
+        "notes": "Room temperature water",
+        "sensorDataAtWatering": {
+          "soilMoisture": 22,
+          "airTemp": 22
+        }
+      }
+    ]
+  }
+}

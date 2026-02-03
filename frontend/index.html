@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Health Monitor</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="system-name">Plant Health Monitor</h1>
+            <div class="device-status">
+                <span id="deviceStatusIcon" class="status-icon"></span>
+                <span id="deviceStatusText" class="status-text"></span>
+            </div>
+            <div class="last-reading">
+                <span id="lastReadingText"></span>
+            </div>
+        </header>
+
+        <!-- Plant Profile Card -->
+        <section class="plant-profile">
+            <div class="plant-photo-container">
+                <img id="plantPhoto" src="" alt="" class="plant-photo">
+            </div>
+            <div class="plant-details">
+                <h2 class="plant-name">
+                    <span id="plantName"></span>
+                    <span id="plantNickname" class="plant-nickname"></span>
+                </h2>
+                <div class="plant-meta">
+                    <span id="plantType" class="plant-type"></span>
+                    <span id="plantAge" class="plant-age"></span>
+                </div>
+            </div>
+            <button id="editPlantBtn" class="btn-edit">Edit Plant Details</button>
+        </section>
+
+        <!-- LLM Plant Status & Recommendation (Hero Section) -->
+        <section class="hero-recommendation">
+            <div class="status-emoticon">
+                <span id="statusEmoticon" class="emoticon-large"></span>
+            </div>
+            <div class="recommendation-content">
+                <h3 id="actionLabel" class="action-label"></h3>
+                <p id="humanFriendlyAdvice" class="advice-text"></p>
+                <p id="contextNote" class="context-note"></p>
+            </div>
+            <div id="warningBanner" class="warning-banner hidden">
+                <span class="warning-icon">⚠️</span>
+                <span id="warningText" class="warning-text"></span>
+            </div>
+        </section>
+
+        <!-- LLM Watering Prediction Hub -->
+        <section class="watering-prediction">
+            <h3 class="section-title">Watering Schedule</h3>
+            <div class="watering-info">
+                <div class="watering-item">
+                    <span class="watering-label">Next Watering:</span>
+                    <span id="nextWateringTime" class="watering-value"></span>
+                </div>
+                <div class="watering-item">
+                    <span class="watering-label">Countdown:</span>
+                    <span id="countdownTimer" class="watering-value"></span>
+                </div>
+                <div class="watering-item">
+                    <span class="watering-label">Recommended Amount:</span>
+                    <span id="wateringAmount" class="watering-value"></span>
+                </div>
+                <div class="evaporation-info">
+                    <span id="evaporationRate" class="evaporation-text"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simplified Sensor Data Grid -->
+        <section class="sensor-grid">
+            <h3 class="section-title">Sensor Readings</h3>
+            <div class="sensor-cards">
+                <div class="sensor-card">
+                    <div class="sensor-icon">🌱</div>
+                    <h4 class="sensor-title">Soil Moisture</h4>
+                    <div id="soilMoistureValue" class="sensor-value"></div>
+                    <div id="soilMoistureRef" class="sensor-reference"></div>
+                </div>
+                <div class="sensor-card">
+                    <div class="sensor-icon">🌡️</div>
+                    <h4 class="sensor-title">Air Temperature</h4>
+                    <div id="airTempValue" class="sensor-value"></div>
+                    <div id="airTempRef" class="sensor-reference"></div>
+                </div>
+                <div class="sensor-card">
+                    <div class="sensor-icon">💧</div>
+                    <h4 class="sensor-title">Air Humidity</h4>
+                    <div id="airHumidityValue" class="sensor-value"></div>
+                    <div id="airHumidityRef" class="sensor-reference"></div>
+                </div>
+                <div class="sensor-card">
+                    <div class="sensor-icon">💡</div>
+                    <h4 class="sensor-title">Light Level</h4>
+                    <div id="lightLevelValue" class="sensor-value"></div>
+                    <div id="lightLevelRef" class="sensor-reference"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Historical Logs -->
+        <section class="historical-section">
+            <h3 class="section-title">Historical Data</h3>
+
+            <!-- Time Filter -->
+            <div class="time-filter">
+                <button class="filter-btn active" data-filter="7d">Last 7 Days</button>
+                <button class="filter-btn" data-filter="30d">Last 30 Days</button>
+                <button class="filter-btn" data-filter="all">All Time</button>
+            </div>
+
+            <!-- Single-Sensor Charts -->
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <h4 class="chart-title">Soil Moisture Trend</h4>
+                    <canvas id="soilMoistureChart"></canvas>
+                    <div id="noDataSoilMoisture" class="no-data hidden">🌱 No historical data yet — start tracking your plant's health!</div>
+                </div>
+                <div class="chart-wrapper">
+                    <h4 class="chart-title">Air Temperature Trend</h4>
+                    <canvas id="airTempChart"></canvas>
+                    <div id="noDataAirTemp" class="no-data hidden">🌱 No historical data yet — start tracking your plant's health!</div>
+                </div>
+                <div class="chart-wrapper">
+                    <h4 class="chart-title">Air Humidity Trend</h4>
+                    <canvas id="airHumidityChart"></canvas>
+                    <div id="noDataAirHumidity" class="no-data hidden">🌱 No historical data yet — start tracking your plant's health!</div>
+                </div>
+                <div class="chart-wrapper">
+                    <h4 class="chart-title">Light Level Trend</h4>
+                    <canvas id="lightLevelChart"></canvas>
+                    <div id="noDataLightLevel" class="no-data hidden">🌱 No historical data yet — start tracking your plant's health!</div>
+                </div>
+            </div>
+
+            <!-- Watering History Log -->
+            <div class="watering-log">
+                <h4 class="subsection-title">Watering History</h4>
+                <ul id="wateringLogList" class="watering-list"></ul>
+                <div id="noDataWateringLog" class="no-data hidden">💧 No watering history yet — log your first watering in the plant config!</div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Plant Configuration Screen -->
+    <div id="configScreen" class="screen">
+        <header class="header">
+            <button id="backBtn" class="btn-back">← Back to Home</button>
+            <h1 class="system-name">Plant Configuration</h1>
+        </header>
+
+        <section class="config-section">
+            <form id="plantConfigForm" class="plant-form">
+                <!-- Plant Name -->
+                <div class="form-group">
+                    <label for="inputPlantName" class="form-label">Plant Name <span class="required">*</span></label>
+                    <input type="text" id="inputPlantName" name="plantName" class="form-input" required>
+                </div>
+
+                <!-- Plant Nickname -->
+                <div class="form-group">
+                    <label for="inputPlantNickname" class="form-label">Plant Nickname (Optional)</label>
+                    <input type="text" id="inputPlantNickname" name="plantNickname" class="form-input">
+                </div>
+
+                <!-- Plant Type -->
+                <div class="form-group">
+                    <label for="inputPlantType" class="form-label">Plant Type <span class="required">*</span></label>
+                    <select id="inputPlantType" name="plantType" class="form-select" required>
+                        <option value="">Select a plant type...</option>
+                        <option value="tropical">Peace Lily</option>
+                        <option value="tropical">Pothos</option>
+                        <option value="tropical">Monstera</option>
+                        <option value="desert">Cactus</option>
+                        <option value="desert">Succulent</option>
+                        <option value="tropical">Snake Plant</option>
+                        <option value="tropical">ZZ Plant</option>
+                        <option value="fern">Fern</option>
+                        <option value="custom">Custom (Enter below)</option>
+                    </select>
+                </div>
+
+                <!-- Custom Plant Type -->
+                <div class="form-group hidden" id="customPlantTypeGroup">
+                    <label for="inputCustomPlantType" class="form-label">Custom Plant Type</label>
+                    <input type="text" id="inputCustomPlantType" name="customPlantType" class="form-input">
+                </div>
+
+                <!-- Plant Age -->
+                <div class="form-group">
+                    <label for="inputPlantAge" class="form-label">Plant Age (Optional)</label>
+                    <div class="age-input-group">
+                        <input type="number" id="inputPlantAge" name="plantAge" class="form-input" min="0">
+                        <select id="inputAgeUnit" name="ageUnit" class="form-select">
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Plant Photo Upload -->
+                <div class="form-group">
+                    <label for="inputPlantPhoto" class="form-label">Plant Photo (Optional)</label>
+                    <input type="file" id="inputPlantPhoto" name="plantPhoto" class="form-input" accept="image/jpeg,image/png">
+                    <div class="photo-preview-container">
+                        <img id="photoPreview" src="" alt="Photo preview" class="photo-preview hidden">
+                    </div>
+                    <small class="form-help">JPG or PNG only, max 5MB</small>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Plant Details</button>
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                </div>
+
+                <!-- Feedback Messages -->
+                <div id="formSuccess" class="form-message success hidden"></div>
+                <div id="formError" class="form-message error hidden"></div>
+            </form>
+        </section>
+
+        <!-- LLM Care Sheet -->
+        <section class="care-sheet-section">
+            <div class="care-sheet-card">
+                <h3 id="careSheetTitle" class="care-sheet-title"></h3>
+                <div id="careSheetContent" class="care-sheet-content"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

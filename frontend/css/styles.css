@@ -1,0 +1,715 @@
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f5f5f5;
+    padding: 0;
+    margin: 0;
+}
+
+/* Screen Management */
+.screen {
+    display: none;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Header */
+.header {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.system-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.device-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.status-icon {
+    font-size: 1.2rem;
+}
+
+.status-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.last-reading {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Plant Profile Card */
+.plant-profile {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.plant-photo-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 1rem;
+}
+
+.plant-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    aspect-ratio: 4/3;
+}
+
+.plant-details {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.plant-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.plant-nickname {
+    color: #666;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.plant-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.plant-type,
+.plant-age {
+    font-size: 0.9rem;
+    color: #555;
+    padding: 0.25rem 0.75rem;
+    background: #f0f0f0;
+    border-radius: 20px;
+}
+
+.btn-edit {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-edit:hover {
+    background: #2980b9;
+}
+
+/* Hero Recommendation Section */
+.hero-recommendation {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 2rem 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.status-emoticon {
+    margin-bottom: 1rem;
+}
+
+.emoticon-large {
+    font-size: 4rem;
+    display: block;
+}
+
+.action-label {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.advice-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.context-note {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+.warning-banner {
+    background: #e74c3c;
+    color: #fff;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+}
+
+.warning-banner.hidden {
+    display: none;
+}
+
+.warning-icon {
+    font-size: 1.5rem;
+}
+
+/* Watering Prediction */
+.watering-prediction {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #3498db;
+}
+
+.watering-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.watering-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.watering-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.watering-value {
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.evaporation-info {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.evaporation-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Sensor Grid */
+.sensor-grid {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sensor-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.sensor-card {
+    background: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+    text-align: center;
+}
+
+.sensor-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sensor-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.sensor-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+}
+
+.sensor-reference {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Historical Section */
+.historical-section {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.time-filter {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.5rem 1rem;
+    background: #f0f0f0;
+    color: #555;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn.active {
+    background: #3498db;
+    color: #fff;
+    border-color: #2980b9;
+}
+
+.filter-btn:hover {
+    background: #e0e0e0;
+}
+
+.filter-btn.active:hover {
+    background: #2980b9;
+}
+
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.chart-wrapper {
+    position: relative;
+}
+
+.chart-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+canvas {
+    width: 100% !important;
+    max-height: 250px !important;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+    font-style: italic;
+}
+
+.no-data.hidden {
+    display: none;
+}
+
+/* Watering Log */
+.watering-log {
+    margin-top: 2rem;
+}
+
+.subsection-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.watering-list {
+    list-style: none;
+}
+
+.watering-list li {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #27ae60;
+}
+
+.watering-timestamp {
+    font-weight: 600;
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.watering-amount {
+    color: #555;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.watering-notes {
+    color: #666;
+    font-style: italic;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.watering-sensor-data {
+    font-size: 0.85rem;
+    color: #777;
+    display: block;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-spinner.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Plant Configuration Screen */
+.config-section {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.plant-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group.hidden {
+    display: none;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.required {
+    color: #e74c3c;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.age-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.age-input-group .form-input {
+    flex: 2;
+}
+
+.age-input-group .form-select {
+    flex: 1;
+}
+
+.photo-preview-container {
+    margin-top: 1rem;
+}
+
+.photo-preview {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.photo-preview.hidden {
+    display: none;
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary {
+    background: #27ae60;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #229954;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.btn-back {
+    background: transparent;
+    border: none;
+    color: #3498db;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.btn-back:hover {
+    color: #2980b9;
+}
+
+.form-message {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.form-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.form-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.form-message.hidden {
+    display: none;
+}
+
+/* Care Sheet */
+.care-sheet-section {
+    background: #fff;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.care-sheet-card {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.care-sheet-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #27ae60;
+}
+
+.care-sheet-content {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #555;
+    white-space: pre-line;
+}
+
+/* Responsive Design - Tablet */
+@media (min-width: 768px) {
+    .screen {
+        padding: 1.5rem;
+    }
+
+    .sensor-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .plant-photo-container {
+        max-width: 400px;
+    }
+
+    .form-actions {
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Responsive Design - Desktop */
+@media (min-width: 1024px) {
+    .screen {
+        padding: 2rem;
+    }
+
+    .sensor-cards {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .charts-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .plant-profile {
+        display: grid;
+        grid-template-columns: 300px 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .plant-photo-container {
+        margin: 0;
+    }
+
+    .plant-details {
+        text-align: left;
+        margin-bottom: 0;
+    }
+
+    .plant-meta {
+        justify-content: flex-start;
+    }
+
+    .btn-edit {
+        width: auto;
+        min-width: 200px;
+    }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
