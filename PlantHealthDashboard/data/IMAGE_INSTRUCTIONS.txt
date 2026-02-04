@@ -1,0 +1,53 @@
+REQUIRED IMAGES FOR PLANT HEALTH DASHBOARD
+==========================================
+
+Please place the following images in this folder (PlantHealthDashboard/data/):
+
+1. HOUSE LAYOUT IMAGE
+   Filename: house_layout.png
+   Description: The floor plan showing Living Room, Kitchen, Bathroom, and Balcony
+   *** YOU ALREADY HAVE THIS IMAGE ***
+
+2. PLANT IMAGES (60x60 pixels recommended):
+
+   a) rose.png
+      - Image of a rose plant
+      - For Living Room
+      - Optimal: 50-70% humidity, 15-25°C, 400-800 lux
+
+   b) banana.png
+      - Image of a banana plant
+      - For Kitchen
+      - Optimal: 60-80% humidity, 20-30°C, 600-1000 lux
+
+   c) water_lily.png
+      - Image of a water lily
+      - For Bathroom
+      - Optimal: 70-90% humidity, 20-28°C, 300-700 lux
+
+   d) tomato_plant.png
+      - Image of a tomato plant
+      - For Balcony
+      - Optimal: 60-80% humidity, 20-30°C, 600-1000 lux
+
+NOTES:
+- All plant images are optional - the dashboard will work without them
+- If images are not found, the plant health section will display without icons
+- PNG format is recommended for transparency
+- Images will be displayed at 60x60 pixels in the health panel
+- You can find free plant images from:
+  * Unsplash (unsplash.com)
+  * Pexels (pexels.com)
+  * PNG Tree (pngtree.com)
+  * Or create simple icons in any drawing program
+
+EXAMPLE FILE STRUCTURE:
+PlantHealthDashboard/
+├── data/
+│   ├── house_layout.png (REQUIRED - you have this)
+│   ├── rose.png (optional)
+│   ├── banana.png (optional)
+│   ├── water_lily.png (optional)
+│   └── tomato_plant.png (optional)
+├── PlantHealthDashboard.pde
+└── HouseRegion.pde

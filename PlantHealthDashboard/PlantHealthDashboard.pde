@@ -21,13 +21,22 @@ float tab1X = 20;
 float tab2X = 220;
 float tabWidth = 180;
 
-// Time slider for 24-hour view
+// Time slider for 24-hour view (30-minute intervals = 48 data points)
 float sliderX = 200;
 float sliderY = 0;  // Will be set in setup
 float sliderWidth = 600;
 float sliderHeight = 20;
-int selectedHour = 0;  // 0-23 hours
+int selectedTimeIndex = 0;  // 0-47 (0 = now, 47 = 24 hours ago)
 boolean draggingSlider = false;
+
+// 3D visualization rotation controls
+float rotationX = -0.6;  // Vertical rotation
+float rotationY = 0.4;   // Horizontal rotation
+float rotationZ = 0;     // Roll rotation
+boolean dragging3D = false;
+float prevMouseX3D = 0;
+float prevMouseY3D = 0;
+float viz3DX, viz3DY, viz3DWidth, viz3DHeight;  // 3D visualization area bounds
 
 // House layout image
 PImage houseLayoutImage;
@@ -40,7 +49,7 @@ float houseImageHeight = 500;
  * Setup function - runs once at start
  */
 void setup() {
-  size(1400, 900);
+  size(1400, 900, P3D);
   smooth(8);
 
   sliderY = height - 80;
@@ -55,14 +64,21 @@ void setup() {
   }
 
   // Initialize house regions with positions, names, and plant types
-  regions = new HouseRegion[5];
+  // Coordinates are mapped to the floor plan image
+  regions = new HouseRegion[4];
 
-  // Define regions with their clickable areas (relative to house image position)
-  regions[0] = new HouseRegion("Living Room", 100, 150, 200, 180, "Peace Lily");
-  regions[1] = new HouseRegion("Kitchen", 320, 150, 180, 180, "Herb Garden");
-  regions[2] = new HouseRegion("Balcony", 520, 150, 200, 180, "Tomato Plants");
-  regions[3] = new HouseRegion("Bedroom", 100, 350, 200, 200, "Snake Plant");
-  regions[4] = new HouseRegion("Bathroom", 320, 350, 180, 200, "Water Lily");
+  // Define regions with their clickable areas (mapped to floor plan)
+  // Living Room - large brown wooden floor area on the left side
+  regions[0] = new HouseRegion("Living Room", houseImageX + 20, houseImageY + 20, 360, 460, "Rose");
+
+  // Kitchen - top center-right area with blue tiles
+  regions[1] = new HouseRegion("Kitchen", houseImageX + 390, houseImageY + 20, 170, 190, "Banana");
+
+  // Bathroom - lower center-right area with blue tiles
+  regions[2] = new HouseRegion("Bathroom", houseImageX + 390, houseImageY + 320, 220, 160, "Water Lily");
+
+  // Balcony - far right side with gray/blue tiles
+  regions[3] = new HouseRegion("Balcony", houseImageX + 570, houseImageY + 140, 180, 340, "Tomato Plant");
 
   // Generate 24-hour mock data for all regions
   for (HouseRegion region : regions) {
@@ -222,7 +238,7 @@ void drawRegionDetailView() {
   float detailX = houseImageX + houseImageWidth + 30;
   float detailY = houseImageY;
   float detailWidth = width - detailX - 30;
-  float detailHeight = houseImageHeight + 120;
+  float detailHeight = height - detailY - 30;  // Use full available height
 
   // Background panel
   fill(30, 35, 45, 240);
@@ -244,18 +260,29 @@ void drawRegionDetailView() {
   // Time slider
   fill(180);
   textSize(12);
-  text("Time: " + selectedHour + ":00 (" + (selectedHour == 0 ? "Now" : selectedHour + " hours ago") + ")",
-       detailX + 20, detailY + 75);
+  float hoursAgo = selectedTimeIndex * 0.5;
+  int hours = int(hoursAgo);
+  int minutes = int((hoursAgo - hours) * 60);
+  String timeText = selectedTimeIndex == 0 ? "Now" : hours + "h " + minutes + "m ago";
+  text("Time: " + timeText, detailX + 20, detailY + 75);
 
   drawTimeSlider(detailX + 20, detailY + 95, detailWidth - 40);
 
-  // Growing squares visualization
-  float squaresY = detailY + 140;
-  selectedRegion.drawGrowingSquares(detailX + 20, squaresY, detailWidth - 40, selectedHour);
+  // 3D Growing squares visualization with base platform
+  float squaresY = detailY + 130;
+  float squaresHeight = 250;
 
-  // Plant health prediction
-  float healthY = squaresY + 250;
-  selectedRegion.drawPlantHealth(detailX + 20, healthY, detailWidth - 40, selectedHour);
+  // Store 3D visualization bounds for mouse interaction
+  viz3DX = detailX + 20;
+  viz3DY = squaresY;
+  viz3DWidth = detailWidth - 40;
+  viz3DHeight = squaresHeight;
+
+  selectedRegion.draw3DGrowingSquares(viz3DX, viz3DY, viz3DWidth, viz3DHeight, selectedTimeIndex, rotationX, rotationY, rotationZ);
+
+  // Plant health prediction with gauges
+  float healthY = squaresY + squaresHeight + 15;
+  selectedRegion.drawPlantHealthWithGauges(detailX + 20, healthY, detailWidth - 40, selectedTimeIndex);
 
   popStyle();
 }
@@ -307,9 +334,10 @@ void drawTimeSlider(float x, float y, float w) {
   strokeWeight(1);
   rect(x, y, w, sliderHeight, 5);
 
-  // Hour markers
+  // Hour markers (every 6 hours = 12 intervals)
   for (int i = 0; i <= 24; i += 6) {
-    float markerX = x + map(i, 0, 23, 0, w);
+    int index = i * 2;  // Convert hours to 30-min intervals
+    float markerX = x + map(index, 0, 47, 0, w);
     stroke(100);
     line(markerX, y, markerX, y + sliderHeight);
 
@@ -319,8 +347,8 @@ void drawTimeSlider(float x, float y, float w) {
     text(i + "h", markerX, y + sliderHeight + 3);
   }
 
-  // Selected hour indicator
-  float handleX = x + map(selectedHour, 0, 23, 0, w);
+  // Selected time indicator
+  float handleX = x + map(selectedTimeIndex, 0, 47, 0, w);
   fill(100, 200, 255);
   noStroke();
   circle(handleX, y + sliderHeight/2, 16);
@@ -354,7 +382,7 @@ void mousePressed() {
     for (HouseRegion region : regions) {
       if (region.contains(mouseX, mouseY)) {
         selectedRegion = region;
-        selectedHour = 0;  // Reset to current time
+        selectedTimeIndex = 0;  // Reset to current time
         break;
       }
     }
@@ -373,6 +401,13 @@ void mousePressed() {
         draggingSlider = true;
         updateSliderValue(sliderXPos, sliderW);
       }
+      // Check 3D visualization area click for rotation
+      else if (mouseX >= viz3DX && mouseX <= viz3DX + viz3DWidth &&
+               mouseY >= viz3DY && mouseY <= viz3DY + viz3DHeight) {
+        dragging3D = true;
+        prevMouseX3D = mouseX;
+        prevMouseY3D = mouseY;
+      }
     }
   }
 }
@@ -390,6 +425,21 @@ void mouseDragged() {
 
     updateSliderValue(sliderXPos, sliderW);
   }
+  // Handle 3D rotation dragging
+  else if (dragging3D && selectedRegion != null) {
+    float dx = mouseX - prevMouseX3D;
+    float dy = mouseY - prevMouseY3D;
+
+    // Update rotation based on mouse movement
+    rotationY += dx * 0.01;  // Horizontal rotation
+    rotationX += dy * 0.01;  // Vertical rotation
+
+    // Constrain vertical rotation to prevent flipping
+    rotationX = constrain(rotationX, -PI/2, PI/2);
+
+    prevMouseX3D = mouseX;
+    prevMouseY3D = mouseY;
+  }
 }
 
 /**
@@ -397,6 +447,7 @@ void mouseDragged() {
  */
 void mouseReleased() {
   draggingSlider = false;
+  dragging3D = false;
 }
 
 /**
@@ -415,5 +466,5 @@ void mouseMoved() {
  */
 void updateSliderValue(float sliderX, float sliderW) {
   float relativeX = constrain(mouseX - sliderX, 0, sliderW);
-  selectedHour = round(map(relativeX, 0, sliderW, 0, 23));
+  selectedTimeIndex = round(map(relativeX, 0, sliderW, 0, 47));
 }
