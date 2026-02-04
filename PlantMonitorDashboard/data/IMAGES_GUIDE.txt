@@ -1,0 +1,52 @@
+IMAGE DOWNLOAD GUIDE
+====================
+
+To complete the visualization, you need to download 4 images (one for each room).
+Place the downloaded images in this "data" folder with the exact names below.
+
+REQUIRED IMAGES:
+1. living_room.jpg  - Living room interior
+2. attic.jpg        - Attic room interior
+3. balcony.jpg      - Balcony with view
+4. toilet.jpg       - Modern bathroom/toilet
+
+IMAGE SOURCES (All free to use, no attribution required):
+----------------------------------------------------------
+
+UNSPLASH (Recommended - highest quality):
+- Living Room: https://unsplash.com/s/photos/living-room
+- Attic: https://unsplash.com/s/photos/attic-room
+- Balcony: https://unsplash.com/s/photos/apartment-balcony
+- Toilet: https://unsplash.com/s/photos/modern-bathroom
+
+PEXELS (Alternative - also excellent):
+- Living Room: https://www.pexels.com/search/living%20room/
+- Attic: https://www.pexels.com/search/attic%20room/
+- Balcony: https://www.pexels.com/search/balcony/
+- Toilet: https://www.pexels.com/search/modern%20bathroom/
+
+PIXABAY (Alternative):
+- Living Room: https://pixabay.com/images/search/living%20room/
+
+DOWNLOAD INSTRUCTIONS:
+----------------------
+1. Visit one of the URLs above
+2. Find an image you like
+3. Download it (choose medium or small size for faster loading)
+4. Rename the file to match the required name (e.g., "living_room.jpg")
+5. Place it in this "data" folder
+
+RECOMMENDED IMAGE SPECIFICATIONS:
+---------------------------------
+- Format: JPG or PNG
+- Size: 500-1000 pixels wide (smaller is faster)
+- Aspect ratio: Square or landscape (approx 1:1 or 4:3)
+
+EXAMPLE IMAGES TO SEARCH FOR:
+------------------------------
+- Living Room: Cozy modern living room with plants, sofa
+- Attic: Bright attic bedroom or workspace with sloped ceiling
+- Balcony: Urban balcony with city view or plants
+- Toilet: Clean modern bathroom with natural light
+
+The visualization will automatically load these images when you run the sketch.
