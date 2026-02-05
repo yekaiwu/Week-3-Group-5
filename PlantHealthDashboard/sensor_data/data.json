@@ -1,0 +1,177 @@
+{
+  "zones": [
+    {
+      "name": "Zone 1: NE (Window)",
+      "x": -150,
+      "z": -150,
+      "r": 255,
+      "g": 100,
+      "b": 100,
+      "timeline": [
+        {
+          "hour": 0,
+          "temp": 22.0,
+          "humidity": 45.0,
+          "lux": 0.0
+        },
+        {
+          "hour": 6,
+          "temp": 24.0,
+          "humidity": 50.0,
+          "lux": 200.0
+        },
+        {
+          "hour": 12,
+          "temp": 32.0,
+          "humidity": 35.0,
+          "lux": 1500.0
+        },
+        {
+          "hour": 18,
+          "temp": 28.0,
+          "humidity": 45.0,
+          "lux": 100.0
+        }
+      ]
+    },
+    {
+      "name": "Zone 2: NW (Shade)",
+      "x": 150,
+      "z": -150,
+      "r": 100,
+      "g": 150,
+      "b": 255,
+      "timeline": [
+        {
+          "hour": 0,
+          "temp": 20.0,
+          "humidity": 60.0,
+          "lux": 0.0
+        },
+        {
+          "hour": 6,
+          "temp": 21.0,
+          "humidity": 65.0,
+          "lux": 50.0
+        },
+        {
+          "hour": 12,
+          "temp": 25.0,
+          "humidity": 55.0,
+          "lux": 400.0
+        },
+        {
+          "hour": 18,
+          "temp": 23.0,
+          "humidity": 60.0,
+          "lux": 20.0
+        }
+      ]
+    },
+    {
+      "name": "Zone 3: SE (Heater)",
+      "x": -150,
+      "z": 150,
+      "r": 100,
+      "g": 255,
+      "b": 100,
+      "timeline": [
+        {
+          "hour": 0,
+          "temp": 28.0,
+          "humidity": 30.0,
+          "lux": 0.0
+        },
+        {
+          "hour": 6,
+          "temp": 29.0,
+          "humidity": 35.0,
+          "lux": 100.0
+        },
+        {
+          "hour": 12,
+          "temp": 35.0,
+          "humidity": 25.0,
+          "lux": 800.0
+        },
+        {
+          "hour": 18,
+          "temp": 30.0,
+          "humidity": 30.0,
+          "lux": 50.0
+        }
+      ]
+    },
+    {
+      "name": "Zone 4: SW (Door)",
+      "x": 150,
+      "z": 150,
+      "r": 255,
+      "g": 200,
+      "b": 100,
+      "timeline": [
+        {
+          "hour": 0,
+          "temp": 23.0,
+          "humidity": 50.0,
+          "lux": 0.0
+        },
+        {
+          "hour": 6,
+          "temp": 24.0,
+          "humidity": 55.0,
+          "lux": 150.0
+        },
+        {
+          "hour": 12,
+          "temp": 28.0,
+          "humidity": 45.0,
+          "lux": 900.0
+        },
+        {
+          "hour": 18,
+          "temp": 26.0,
+          "humidity": 50.0,
+          "lux": 100.0
+        }
+      ]
+    }
+  ],
+  "plants": [
+    {
+      "name": "Cactus & Succulent",
+      "icon": "\ud83c\udf35",
+      "temp": 30.0,
+      "humidity": 30.0,
+      "lux": 900.0
+    },
+    {
+      "name": "Orchid & Tropical",
+      "icon": "\ud83c\udf3a",
+      "temp": 28.0,
+      "humidity": 80.0,
+      "lux": 500.0
+    },
+    {
+      "name": "Fern & Moss",
+      "icon": "\ud83c\udf3f",
+      "temp": 24.0,
+      "humidity": 75.0,
+      "lux": 300.0
+    },
+    {
+      "name": "Salad & Herbs",
+      "icon": "\ud83e\udd6c",
+      "temp": 22.0,
+      "humidity": 50.0,
+      "lux": 700.0
+    },
+    {
+      "name": "Snake Plant",
+      "icon": "\ud83e\udeb4",
+      "temp": 25.0,
+      "humidity": 50.0,
+      "lux": 500.0
+    }
+  ]
+}
