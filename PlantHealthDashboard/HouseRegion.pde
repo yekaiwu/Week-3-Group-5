@@ -8,8 +8,6 @@ class HouseRegion {
   String name;
   float x, y, width, height;
   boolean isHovered = false;
-  String plantType;
-  PImage plantImage;
   String csvFilePath;
 
   // Raw sensor data from CSV (all 30-minute intervals)
@@ -24,21 +22,15 @@ class HouseRegion {
   float[] lightHistory;
   String[] timestampHistory;  // Timestamps for current timeframe
 
-  // Plant health thresholds (specific to plant type)
-  float optimalHumidityMin, optimalHumidityMax;
-  float optimalTempMin, optimalTempMax;
-  float optimalLightMin, optimalLightMax;
-
   /**
    * Constructor
    */
-  HouseRegion(String name, float x, float y, float width, float height, String plantType, String csvFilePath) {
+  HouseRegion(String name, float x, float y, float width, float height, String csvFilePath) {
     this.name = name;
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.plantType = plantType;
     this.csvFilePath = csvFilePath;
 
     // Initialize raw data storage
@@ -52,73 +44,6 @@ class HouseRegion {
     temperatureHistory = new float[48];
     lightHistory = new float[48];
     timestampHistory = new String[48];
-
-    // Load plant image
-    loadPlantImage();
-
-    // Set plant-specific optimal conditions
-    setPlantOptimalConditions();
-  }
-
-  /**
-   * Load plant image
-   */
-  void loadPlantImage() {
-    try {
-      String filename = plantType.toLowerCase().replace(" ", "_") + ".png";
-      plantImage = loadImage(filename);
-      println("Loaded plant image: " + filename);
-    } catch (Exception e) {
-      println("Could not load image for " + plantType);
-      plantImage = null;
-    }
-  }
-
-  /**
-   * Set optimal conditions based on plant type
-   */
-  void setPlantOptimalConditions() {
-    switch (plantType) {
-      case "Rose":
-        optimalHumidityMin = 50;
-        optimalHumidityMax = 70;
-        optimalTempMin = 15;
-        optimalTempMax = 25;
-        optimalLightMin = 400;
-        optimalLightMax = 800;
-        break;
-      case "Banana":
-        optimalHumidityMin = 60;
-        optimalHumidityMax = 80;
-        optimalTempMin = 20;
-        optimalTempMax = 30;
-        optimalLightMin = 600;
-        optimalLightMax = 1000;
-        break;
-      case "Tomato Plant":
-        optimalHumidityMin = 60;
-        optimalHumidityMax = 80;
-        optimalTempMin = 20;
-        optimalTempMax = 30;
-        optimalLightMin = 600;
-        optimalLightMax = 1000;
-        break;
-      case "Water Lily":
-        optimalHumidityMin = 70;
-        optimalHumidityMax = 90;
-        optimalTempMin = 20;
-        optimalTempMax = 28;
-        optimalLightMin = 300;
-        optimalLightMax = 700;
-        break;
-      default:
-        optimalHumidityMin = 40;
-        optimalHumidityMax = 70;
-        optimalTempMin = 18;
-        optimalTempMax = 28;
-        optimalLightMin = 200;
-        optimalLightMax = 800;
-    }
   }
 
   /**
@@ -155,6 +80,35 @@ class HouseRegion {
   }
 
   /**
+   * Find index of timestamp closest to current system time
+   */
+  int findCurrentTimeIndex() {
+    if (rawTimestamps.size() == 0) return rawTimestamps.size() - 1;
+
+    // Get current system time
+    String currentTime = String.format("%04d-%02d-%02dT%02d:%02d:00",
+                                       year(), month(), day(), hour(), minute());
+
+    // Binary search or linear search for closest timestamp
+    int closestIndex = rawTimestamps.size() - 1;
+    long minDiff = Long.MAX_VALUE;
+
+    for (int i = rawTimestamps.size() - 1; i >= 0; i--) {
+      String timestamp = rawTimestamps.get(i);
+      // Compare timestamps (they're in ISO format so lexicographic comparison works)
+      int cmp = currentTime.compareTo(timestamp);
+
+      if (cmp >= 0) {
+        // Current time is after or equal to this timestamp
+        closestIndex = i;
+        break;
+      }
+    }
+
+    return closestIndex;
+  }
+
+  /**
    * Update data arrays based on timeframe mode
    * 0 = Hourly (last 48 points, 30-min intervals = 24 hours)
    * 1 = Daily (last 30 days, aggregated)
@@ -167,24 +121,30 @@ class HouseRegion {
     }
 
     if (mode == 0) {
-      // Hourly: last 48 data points from the most recent data in CSV (24 hours)
+      // Hourly: 48 data points (24 hours) leading up to current system time
       // Each reading is 30 minutes apart
-      // Shows the most recent 24 hours available in the CSV
-      // Example: If CSV ends at Dec 31 23:30, shows Dec 31 00:00 - Dec 31 23:30
-      int dataSize = min(48, rawHumidity.size());
+      // Shows the past 24 hours from now
+      // Example: If current time is Feb 6 15:30, shows Feb 5 15:30 - Feb 6 15:30
+
+      // Find the index closest to current time
+      int currentIndex = findCurrentTimeIndex();
+
+      int dataSize = min(48, currentIndex + 1);
       humidityHistory = new float[dataSize];
       temperatureHistory = new float[dataSize];
       lightHistory = new float[dataSize];
       timestampHistory = new String[dataSize];
 
-      int startIndex = max(0, rawHumidity.size() - 48);
+      int startIndex = max(0, currentIndex - 47);  // Go back 47 readings (23.5 hours)
       for (int i = 0; i < dataSize; i++) {
-        // i=0 = most recent reading, i=47 = 24 hours ago
-        int sourceIndex = startIndex + (dataSize - 1 - i);  // Reverse order
-        humidityHistory[i] = rawHumidity.get(sourceIndex);
-        temperatureHistory[i] = rawTemperature.get(sourceIndex);
-        lightHistory[i] = rawLight.get(sourceIndex);
-        timestampHistory[i] = rawTimestamps.get(sourceIndex);
+        // i=0 = current time (most recent), i=47 = 24 hours ago
+        int sourceIndex = currentIndex - i;  // Reverse order from current time
+        if (sourceIndex >= 0 && sourceIndex < rawHumidity.size()) {
+          humidityHistory[i] = rawHumidity.get(sourceIndex);
+          temperatureHistory[i] = rawTemperature.get(sourceIndex);
+          lightHistory[i] = rawLight.get(sourceIndex);
+          timestampHistory[i] = rawTimestamps.get(sourceIndex);
+        }
       }
     } else if (mode == 1) {
       // Daily: last 30 days from the most recent data in CSV
@@ -385,8 +345,36 @@ class HouseRegion {
     textSize(14);
     text("Sensor Readings", x + 15, y + 10);
 
-    // Layout calculations - move labels to bottom
-    float labelY = y + h - 40;
+    // Legend - show color meanings
+    float legendX = x + 15;
+    float legendY = y + 32;
+    float legendBoxSize = 12;
+    float legendSpacing = 100;
+
+    textSize(10);
+    textAlign(LEFT, CENTER);
+
+    // Humidity legend (blue)
+    fill(80, 150, 220);
+    noStroke();
+    rect(legendX, legendY, legendBoxSize, legendBoxSize, 2);
+    fill(200);
+    text("Humidity", legendX + legendBoxSize + 5, legendY + legendBoxSize/2);
+
+    // Temperature legend (orange)
+    fill(255, 100, 50);
+    rect(legendX + legendSpacing, legendY, legendBoxSize, legendBoxSize, 2);
+    fill(200);
+    text("Temperature", legendX + legendSpacing + legendBoxSize + 5, legendY + legendBoxSize/2);
+
+    // Light legend (yellow)
+    fill(255, 220, 80);
+    rect(legendX + legendSpacing * 2, legendY, legendBoxSize, legendBoxSize, 2);
+    fill(200);
+    text("Light", legendX + legendSpacing * 2 + legendBoxSize + 5, legendY + legendBoxSize/2);
+
+    // Layout calculations - move labels to bottom (more space for cubes)
+    float labelY = y + h - 35;
     float labelSpacing = w / 3;
 
     // Position labels evenly across width
@@ -394,24 +382,23 @@ class HouseRegion {
     float tempLabelX = x + labelSpacing * 1.5f;
     float lightLabelX = x + labelSpacing * 2.5f;
 
-    // 3D visualization area (above labels, with more space at top)
-    float viz3DAreaTop = y + 35;
-    float viz3DAreaBottom = labelY - 50;  // More space above labels
+    // 3D visualization area (above labels, with more space for taller cubes)
+    float viz3DAreaTop = y + 65;  // More space at top for legend
+    float viz3DAreaBottom = labelY - 10;  // Less gap above labels to maximize cube space
     float viz3DHeight = viz3DAreaBottom - viz3DAreaTop;
 
     float cubeWidth = min(50.0f, w / 8.0f);  // Cube width/depth
-    float maxCubeHeight = viz3DHeight * 0.85f;
+    float maxCubeHeight = viz3DHeight;  // Use full available height for taller cubes
 
     // Calculate cube heights based on values (grow upwards)
     float humidityHeight = map(humidityValue, 0, 100, maxCubeHeight * 0.15f, maxCubeHeight);
     float tempHeight = map(tempValue, 15, 35, maxCubeHeight * 0.15f, maxCubeHeight);
     float lightHeight = map(lightValue, 0, 1000, maxCubeHeight * 0.15f, maxCubeHeight);
 
-    // Enable 3D lighting for better depth perception
+    // Enable 3D lighting for better depth perception (simplified for performance)
     hint(ENABLE_DEPTH_TEST);
     lights();
-    ambientLight(80, 80, 80);
-    directionalLight(200, 200, 200, -0.5f, 0.5f, -1);
+    ambientLight(100, 100, 100);  // Single ambient light for better performance
 
     // Fixed camera angle for all cubes (identical orientation)
     // For perfectly horizontal bottom edges and vertical side edges:
@@ -435,7 +422,7 @@ class HouseRegion {
     rotateY(fixedRotY);
     fill(80, 150, 220);
     stroke(60, 100, 160);  // Darker blue edges
-    strokeWeight(2);
+    strokeWeight(1);  // Reduced stroke weight for better performance
     box(cubeWidth, humidityHeight, cubeWidth);
     popMatrix();
 
@@ -446,7 +433,7 @@ class HouseRegion {
     rotateY(fixedRotY);
     fill(255, 100, 50);
     stroke(180, 60, 20);  // Darker orange edges for visibility
-    strokeWeight(2);
+    strokeWeight(1);  // Reduced stroke weight for better performance
     box(cubeWidth, tempHeight, cubeWidth);
     popMatrix();
 
@@ -457,7 +444,7 @@ class HouseRegion {
     rotateY(fixedRotY);
     fill(255, 220, 80);
     stroke(200, 160, 40);  // Darker yellow edges for visibility
-    strokeWeight(2);
+    strokeWeight(1);  // Reduced stroke weight for better performance
     box(cubeWidth, lightHeight, cubeWidth);
     popMatrix();
 
@@ -492,446 +479,6 @@ class HouseRegion {
     text(nf(lightValue, 0, 0) + " lux", lightLabelX, labelY + 14);
 
     popStyle();
-  }
-
-  /**
-   * Draw plant health with gauges combined
-   */
-  void drawPlantHealthWithGauges(float x, float y, float w, int timeIndex) {
-    pushStyle();
-
-    // Background panel - adjusted height to fit all content
-    fill(35, 40, 50, 200);
-    stroke(80);
-    strokeWeight(1);
-    rect(x, y, w, 270, 8);
-
-    float padding = 15;
-
-    // === TOP SECTION: Plant Info & Health Status ===
-    // Plant image section
-    float imgSize = 65;
-    float imgX = x + padding;
-    float imgY = y + padding;
-
-    if (plantImage != null) {
-      image(plantImage, imgX, imgY, imgSize, imgSize);
-    }
-
-    // Health info section - dynamically positioned
-    float healthInfoX = plantImage != null ? imgX + imgSize + 20 : imgX;
-    float healthInfoY = imgY;
-    float healthInfoWidth = w - (healthInfoX - x) - padding;
-
-    // Plant type title
-    fill(150, 255, 150);
-    textAlign(LEFT, TOP);
-    textSize(15);
-    text(plantType, healthInfoX, healthInfoY);
-
-    // Get current values
-    float humidity = humidityHistory[timeIndex];
-    float temp = temperatureHistory[timeIndex];
-    float light = lightHistory[timeIndex];
-
-    // Calculate health score
-    float humidityScore = calculateParameterScore(humidity, optimalHumidityMin, optimalHumidityMax, 0, 100);
-    float tempScore = calculateParameterScore(temp, optimalTempMin, optimalTempMax, 15, 35);
-    float lightScore = calculateParameterScore(light, optimalLightMin, optimalLightMax, 0, 1000);
-    float overallHealth = (humidityScore + tempScore + lightScore) / 3;
-
-    // Health status
-    String healthStatus;
-    int healthColor;
-    if (overallHealth >= 80) {
-      healthStatus = "Excellent";
-      healthColor = color(50, 255, 50);
-    } else if (overallHealth >= 60) {
-      healthStatus = "Good";
-      healthColor = color(150, 255, 50);
-    } else if (overallHealth >= 40) {
-      healthStatus = "Fair";
-      healthColor = color(255, 200, 50);
-    } else if (overallHealth >= 20) {
-      healthStatus = "Poor";
-      healthColor = color(255, 150, 50);
-    } else {
-      healthStatus = "Critical";
-      healthColor = color(255, 50, 50);
-    }
-
-    // Health text - dynamically positioned below plant type
-    float currentY = healthInfoY + 23;  // Below plant type
-    fill(healthColor);
-    textSize(12);
-    text("Health: " + nf(overallHealth, 0, 1) + "% - " + healthStatus, healthInfoX, currentY);
-
-    // Health bar - dynamically positioned directly below health text
-    currentY += 14;  // Move down from health text
-    float barWidth = healthInfoWidth;
-    float barHeight = 12;
-
-    fill(40, 45, 55);
-    noStroke();
-    rect(healthInfoX, currentY, barWidth, barHeight, 6);
-
-    fill(healthColor);
-    rect(healthInfoX, currentY, barWidth * (overallHealth / 100), barHeight, 6);
-
-    // Explanation text - grouped with health status above
-    currentY += barHeight + 8;  // Move down from health bar
-    String explanation = generateHealthExplanation(humidityScore, tempScore, lightScore, humidity, temp, light);
-    fill(200);
-    textAlign(LEFT, TOP);
-    textSize(11);
-    text(explanation, healthInfoX, currentY, healthInfoWidth, 40);
-
-    // === BOTTOM SECTION: Sensor Gauges ===
-    // Grouped gauges with labels and values - positioned below health section
-    float gaugesStartY = y + 110;  // Fixed position for gauge section
-    float gaugeWidth = (w - padding * 4) / 3;
-    float gaugeHeight = 120;  // Slightly bigger
-    float gaugeSpacing = (w - padding * 2 - gaugeWidth * 3) / 2;
-
-    // Humidity gauge
-    drawSmallGauge(x + padding, gaugesStartY, gaugeWidth, gaugeHeight, "Humidity", "%",
-                   humidity, 0.0f, 100.0f,
-                   optimalHumidityMin, optimalHumidityMax);
-
-    // Temperature gauge
-    drawSmallGauge(x + padding + gaugeWidth + gaugeSpacing, gaugesStartY, gaugeWidth, gaugeHeight, "Temperature", "°C",
-                   temp, 15.0f, 35.0f,
-                   optimalTempMin, optimalTempMax);
-
-    // Light gauge
-    drawSmallGauge(x + padding + (gaugeWidth + gaugeSpacing) * 2, gaugesStartY, gaugeWidth, gaugeHeight, "Light", "lux",
-                   light, 0.0f, 1000.0f,
-                   optimalLightMin, optimalLightMax);
-
-    popStyle();
-  }
-
-  /**
-   * Draw a smaller gauge
-   */
-  public void drawSmallGauge(float x, float y, float w, float h, String label, String unit,
-                             float value, float minVal, float maxVal,
-                             float optimalMin, float optimalMax) {
-    pushStyle();
-
-    // Arc parameters - positioned at top of gauge area
-    float centerX = x + w/2;
-    float radius = min(w/2 - 10, 38);  // Slightly bigger radius
-    float centerY = y + radius + 15;  // Position arc near top
-    float startAngle = PI * 0.75f;
-    float endAngle = PI * 2.25f;
-
-    // Draw background arc
-    noFill();
-    stroke(60, 65, 75);
-    strokeWeight(7);  // Slightly thicker
-    strokeCap(SQUARE);
-    arc(centerX, centerY, radius * 2, radius * 2, startAngle, endAngle);
-
-    // Draw optimal range arc
-    float optimalStartAngle = map(optimalMin, minVal, maxVal, startAngle, endAngle);
-    float optimalEndAngle = map(optimalMax, minVal, maxVal, startAngle, endAngle);
-    stroke(50, 200, 50, 120);
-    strokeWeight(7);  // Slightly thicker
-    arc(centerX, centerY, radius * 2, radius * 2, optimalStartAngle, optimalEndAngle);
-
-    // Draw value arc
-    float valueAngle = map(value, minVal, maxVal, startAngle, endAngle);
-    valueAngle = constrain(valueAngle, startAngle, endAngle);
-
-    boolean inRange = (value >= optimalMin && value <= optimalMax);
-    int valueColor = inRange ? color(50, 255, 50) : color(255, 50, 50);
-
-    stroke(valueColor);
-    strokeWeight(4);  // Slightly thicker
-    arc(centerX, centerY, radius * 2, radius * 2, startAngle, valueAngle);
-
-    // Draw needle
-    pushMatrix();
-    translate(centerX, centerY);
-    rotate(valueAngle);
-    fill(255, 50, 50);
-    noStroke();
-    triangle(0, -2.5f, 0, 2.5f, radius - 5, 0);
-    popMatrix();
-
-    // Center dot
-    fill(200);
-    noStroke();
-    circle(centerX, centerY, 6);
-
-    // === GROUPED: Label and Value together ===
-    // Label text BELOW the arc
-    fill(200);
-    textAlign(CENTER, TOP);
-    textSize(11);
-    text(label, centerX, centerY + 12);
-
-    // Value text BELOW the label (grouped)
-    fill(valueColor);
-    textAlign(CENTER, TOP);
-    textSize(13);
-    text(nf(value, 0, 1) + unit, centerX, centerY + 28);
-
-    popStyle();
-  }
-
-  /**
-   * Draw a single gauge (like car speedometer)
-   */
-  void drawGauge(float x, float y, float w, float h, String label, String unit,
-                 float value, float minVal, float maxVal,
-                 float optimalMin, float optimalMax) {
-    pushStyle();
-
-    // Background
-    fill(35, 40, 50, 200);
-    stroke(80);
-    strokeWeight(1);
-    rect(x, y, w, h, 8);
-
-    // Title
-    fill(200);
-    textAlign(CENTER, TOP);
-    textSize(12);
-    text(label, x + w/2, y + 10);
-
-    // Arc parameters
-    float centerX = x + w/2;
-    float centerY = y + h - 30;
-    float radius = w/2 - 20;
-    float startAngle = PI * 0.75f;
-    float endAngle = PI * 2.25f;
-
-    // Draw background arc
-    noFill();
-    stroke(60, 65, 75);
-    strokeWeight(12);
-    strokeCap(SQUARE);
-    arc(centerX, centerY, radius * 2, radius * 2, startAngle, endAngle);
-
-    // Draw optimal range arc (green)
-    float optimalStartAngle = map(optimalMin, minVal, maxVal, startAngle, endAngle);
-    float optimalEndAngle = map(optimalMax, minVal, maxVal, startAngle, endAngle);
-    stroke(50, 200, 50, 150);
-    strokeWeight(12);
-    arc(centerX, centerY, radius * 2, radius * 2, optimalStartAngle, optimalEndAngle);
-
-    // Draw value arc
-    float valueAngle = map(value, minVal, maxVal, startAngle, endAngle);
-    valueAngle = constrain(valueAngle, startAngle, endAngle);
-
-    // Color based on whether in optimal range
-    boolean inRange = (value >= optimalMin && value <= optimalMax);
-    int valueColor = inRange ? color(50, 255, 50) : color(255, 50, 50);
-
-    stroke(valueColor);
-    strokeWeight(6);
-    arc(centerX, centerY, radius * 2, radius * 2, startAngle, valueAngle);
-
-    // Draw needle/pointer
-    pushMatrix();
-    translate(centerX, centerY);
-    rotate(valueAngle);
-    fill(255, 50, 50);
-    noStroke();
-    triangle(0, -5, 0, 5, radius - 10, 0);
-    popMatrix();
-
-    // Center dot
-    fill(200);
-    noStroke();
-    circle(centerX, centerY, 10);
-
-    // Value text
-    fill(valueColor);
-    textAlign(CENTER, CENTER);
-    textSize(14);
-    text(nf(value, 0, 1) + unit, centerX, centerY + radius + 5);
-
-    // Min/max labels
-    fill(150);
-    textSize(9);
-    textAlign(LEFT, CENTER);
-    text(nf(minVal, 0, 0), x + 10, centerY + 10);
-    textAlign(RIGHT, CENTER);
-    text(nf(maxVal, 0, 0), x + w - 10, centerY + 10);
-
-    // Optimal range text
-    fill(100, 200, 100);
-    textAlign(CENTER, BOTTOM);
-    textSize(8);
-    text("Optimal: " + nf(optimalMin, 0, 0) + "-" + nf(optimalMax, 0, 0) + unit,
-         centerX, y + h - 5);
-
-    popStyle();
-  }
-
-  /**
-   * Draw plant health prediction
-   */
-  void drawPlantHealth(float x, float y, float w, int timeIndex) {
-    pushStyle();
-
-    // Background panel (reduced height)
-    fill(35, 40, 50, 200);
-    stroke(80);
-    strokeWeight(1);
-    rect(x, y, w, 140, 8);
-
-    // Plant image (if available) - smaller
-    if (plantImage != null) {
-      float imgSize = 50;
-      image(plantImage, x + 15, y + 12, imgSize, imgSize);
-    }
-
-    // Title
-    float textX = plantImage != null ? x + 75 : x + 15;
-    fill(150, 255, 150);
-    textAlign(LEFT, TOP);
-    textSize(14);
-    text(plantType + " Health", textX, y + 12);
-
-    // Get current values
-    float humidity = humidityHistory[timeIndex];
-    float temp = temperatureHistory[timeIndex];
-    float light = lightHistory[timeIndex];
-
-    // Calculate health score (0-100)
-    float humidityScore = calculateParameterScore(humidity, optimalHumidityMin, optimalHumidityMax, 0, 100);
-    float tempScore = calculateParameterScore(temp, optimalTempMin, optimalTempMax, 15, 35);
-    float lightScore = calculateParameterScore(light, optimalLightMin, optimalLightMax, 0, 1000);
-
-    float overallHealth = (humidityScore + tempScore + lightScore) / 3;
-
-    // Health status and color
-    String healthStatus;
-    int healthColor;
-    if (overallHealth >= 80) {
-      healthStatus = "Excellent";
-      healthColor = color(50, 255, 50);
-    } else if (overallHealth >= 60) {
-      healthStatus = "Good";
-      healthColor = color(150, 255, 50);
-    } else if (overallHealth >= 40) {
-      healthStatus = "Fair";
-      healthColor = color(255, 200, 50);
-    } else if (overallHealth >= 20) {
-      healthStatus = "Poor";
-      healthColor = color(255, 150, 50);
-    } else {
-      healthStatus = "Critical";
-      healthColor = color(255, 50, 50);
-    }
-
-    // Health score display
-    fill(healthColor);
-    textSize(12);
-    text("Score: " + nf(overallHealth, 0, 1) + "% - " + healthStatus, textX, y + 32);
-
-    // Health bar
-    float barWidth = w - 30;
-    float barHeight = 16;
-    float barX = x + 15;
-    float barY = y + 55;
-
-    // Background bar
-    fill(40, 45, 55);
-    noStroke();
-    rect(barX, barY, barWidth, barHeight, 8);
-
-    // Health bar fill
-    fill(healthColor);
-    rect(barX, barY, barWidth * (overallHealth / 100), barHeight, 8);
-
-    // Explanation
-    String explanation = generateHealthExplanation(humidityScore, tempScore, lightScore, humidity, temp, light);
-
-    fill(200);
-    textAlign(LEFT, TOP);
-    textSize(10);
-    text(explanation, x + 15, y + 80, w - 30, 50);
-
-    popStyle();
-  }
-
-  /**
-   * Calculate score for a parameter (0-100)
-   */
-  float calculateParameterScore(float value, float optimalMin, float optimalMax, float absoluteMin, float absoluteMax) {
-    if (value >= optimalMin && value <= optimalMax) {
-      return 100;
-    } else if (value < optimalMin) {
-      // Below optimal
-      float range = optimalMin - absoluteMin;
-      float distance = optimalMin - value;
-      return max(0, 100 - (distance / range) * 100);
-    } else {
-      // Above optimal
-      float range = absoluteMax - optimalMax;
-      float distance = value - optimalMax;
-      return max(0, 100 - (distance / range) * 100);
-    }
-  }
-
-  /**
-   * Generate health explanation based on conditions
-   */
-  public String generateHealthExplanation(float humidityScore, float tempScore, float lightScore,
-                                     float humidity, float temp, float light) {
-    String explanation = plantType + " is currently ";
-
-    ArrayList<String> issues = new ArrayList<String>();
-
-    if (humidityScore < 60) {
-      if (humidity < optimalHumidityMin) {
-        issues.add("humidity is too low (needs " + nf(optimalHumidityMin, 0, 0) + "-" +
-                   nf(optimalHumidityMax, 0, 0) + "%)");
-      } else {
-        issues.add("humidity is too high (needs " + nf(optimalHumidityMin, 0, 0) + "-" +
-                   nf(optimalHumidityMax, 0, 0) + "%)");
-      }
-    }
-
-    if (tempScore < 60) {
-      if (temp < optimalTempMin) {
-        issues.add("temperature is too cold (needs " + nf(optimalTempMin, 0, 1) + "-" +
-                   nf(optimalTempMax, 0, 1) + "°C)");
-      } else {
-        issues.add("temperature is too warm (needs " + nf(optimalTempMin, 0, 1) + "-" +
-                   nf(optimalTempMax, 0, 1) + "°C)");
-      }
-    }
-
-    if (lightScore < 60) {
-      if (light < optimalLightMin) {
-        issues.add("light level is too low (needs " + nf(optimalLightMin, 0, 0) + "-" +
-                   nf(optimalLightMax, 0, 0) + " lux)");
-      } else {
-        issues.add("light level is too high (needs " + nf(optimalLightMin, 0, 0) + "-" +
-                   nf(optimalLightMax, 0, 0) + " lux)");
-      }
-    }
-
-    if (issues.size() == 0) {
-      explanation += "thriving in ideal conditions. All environmental parameters are within optimal range.";
-    } else {
-      explanation += "experiencing suboptimal conditions: ";
-      for (int i = 0; i < issues.size(); i++) {
-        explanation += issues.get(i);
-        if (i < issues.size() - 1) {
-          explanation += ", ";
-        }
-      }
-      explanation += ". Consider adjusting these factors for better plant health.";
-    }
-
-    return explanation;
   }
 
   /**

@@ -61,7 +61,8 @@ float houseImageHeight = 500;
  */
 public void setup() {
   size(1400, 900, P3D);
-  smooth(8);
+  smooth(2);  // Reduced antialiasing for better performance
+  frameRate(30);  // Reduced frame rate for smoother dragging
 
   sliderY = height - 80;
   timeframeButtonY = 105;  // Position below tabs
@@ -94,7 +95,7 @@ public void setup() {
 
   // Bed Room - far right side with gray/blue tiles
   regions[3] = new HouseRegion("Bed Room", houseImageX + 490, houseImageY + 20, 180.0f, 460.0f,
-                                "sensor_data/synthetic_balcony_20260204_160253.csv");
+                                "sensor_data/synthetic_bedroom_20260204_160253.csv");
 
   // Load sensor data from CSV files for all regions
   println("Loading sensor data from CSV files...");
@@ -423,7 +424,7 @@ public void drawRegionDetailView() {
   // 3D Growing squares visualization with base platform
   // Position below slider with enough space for labels (slider height + label height + padding)
   float squaresY = sliderStartY + 20 + sliderHeight + 25;  // Extra space for labels
-  float squaresHeight = 250;
+  float squaresHeight = 400;  // Increased height for taller cubes
 
   // Store 3D visualization bounds for mouse interaction
   viz3DX = detailX + 20;
@@ -513,15 +514,10 @@ public void drawAnalyticsView() {
   String timeframeLabel = timeframeMode == 0 ? "24-Hour" : (timeframeMode == 1 ? "30-Day" : "12-Month");
   text(timeframeLabel + " Sensor Data: " + analyticsRegion.name, 40, titleY);
 
-  // Plant info
-  fill(150, 200, 150);
-  textSize(14);
-  text("Plant: " + analyticsRegion.plantType, 40, titleY + 28);
-
   // ========================================
   // SECTION 3: SENSOR GRAPHS (Properly Spaced)
   // ========================================
-  float graphsStartY = titleY + 65;
+  float graphsStartY = titleY + 35;
   float chartX = 40;
   float chartWidth = width - 80;
   float chartHeight = 200;  // Slightly smaller for better fit
@@ -799,5 +795,10 @@ public void updateSliderValue(float sliderX, float sliderW) {
   float relativeX = constrain(mouseX - sliderX, 0, sliderW);
   int maxIndex = selectedRegion.getMaxTimeIndex(timeframeMode);
   // Reversed mapping: right = index 0 (most recent), left = maxIndex (oldest)
-  selectedTimeIndex = round(map(relativeX, 0, sliderW, maxIndex, 0));
+  int newIndex = round(map(relativeX, 0, sliderW, maxIndex, 0));
+
+  // Only update if the index changed (reduces unnecessary redraws)
+  if (newIndex != selectedTimeIndex) {
+    selectedTimeIndex = newIndex;
+  }
 }

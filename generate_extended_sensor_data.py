@@ -171,7 +171,10 @@ def extend_csv_file(filepath, config, start_date, end_date):
     print(f"  ✓ Extended {config['name']} to {end_date}")
 
 def main():
-    base_path = "/Users/jay/Documents/Processing/PlantHealthDashboard/sensor_data"
+    # Use relative path from script location
+    import os
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    base_path = os.path.join(script_dir, "PlantHealthDashboard/sensor_data")
 
     # Date range for new data
     start_date = datetime(2026, 1, 1, 0, 0, 0)
