@@ -345,6 +345,12 @@ class HouseRegion {
     textSize(14);
     text("Sensor Readings", x + 15, y + 10);
 
+    // Calculate value-based brightness (0.0 to 1.0, where 1.0 is brightest)
+    // Using wider range (0.15 to 1.0) for more dramatic color variation
+    float humidityBrightness = map(humidityValue, 0, 100, 0.15, 1.0);
+    float tempBrightness = map(tempValue, 15, 35, 0.15, 1.0);
+    float lightBrightness = map(lightValue, 0, 1000, 0.15, 1.0);
+
     // Legend - show color meanings
     float legendX = x + 15;
     float legendY = y + 32;
@@ -354,30 +360,30 @@ class HouseRegion {
     textSize(10);
     textAlign(LEFT, CENTER);
 
-    // Humidity legend (blue)
-    fill(80, 150, 220);
+    // Humidity legend (blue) - use medium brightness
+    fill(80 * 0.65, 150 * 0.65, 220 * 0.65);
     noStroke();
     rect(legendX, legendY, legendBoxSize, legendBoxSize, 2);
     fill(200);
     text("Humidity", legendX + legendBoxSize + 5, legendY + legendBoxSize/2);
 
-    // Temperature legend (orange)
-    fill(255, 100, 50);
+    // Temperature legend (orange) - use medium brightness
+    fill(255 * 0.65, 100 * 0.65, 50 * 0.65);
     rect(legendX + legendSpacing, legendY, legendBoxSize, legendBoxSize, 2);
     fill(200);
     text("Temperature", legendX + legendSpacing + legendBoxSize + 5, legendY + legendBoxSize/2);
 
-    // Light legend (yellow)
-    fill(255, 220, 80);
+    // Light legend (yellow) - use medium brightness
+    fill(255 * 0.65, 220 * 0.65, 80 * 0.65);
     rect(legendX + legendSpacing * 2, legendY, legendBoxSize, legendBoxSize, 2);
     fill(200);
     text("Light", legendX + legendSpacing * 2 + legendBoxSize + 5, legendY + legendBoxSize/2);
 
     // Layout calculations - move labels to bottom (more space for cubes)
     float labelY = y + h - 35;
-    float labelSpacing = w / 3;
+    float labelSpacing = (w - 140) / 3;  // Reduce width to make space for value scale on right
 
-    // Position labels evenly across width
+    // Position labels evenly across width - shifted left to make room for legend
     float humidityLabelX = x + labelSpacing * 0.5f;
     float tempLabelX = x + labelSpacing * 1.5f;
     float lightLabelX = x + labelSpacing * 2.5f;
@@ -415,35 +421,35 @@ class HouseRegion {
     // All cubes share the same baseline - bottom edges are perfectly horizontal
     // Strategy: Translate to position bottom at baseline, THEN rotate
 
-    // Humidity cube (blue) - aligned above "Humidity" label
+    // Humidity cube (blue) - aligned above "Humidity" label - brightness varies with value
     pushMatrix();
     translate(humidityLabelX, baselineY - humidityHeight/2, 0);  // Position center so bottom is at baseline
     rotateX(fixedRotX);
     rotateY(fixedRotY);
-    fill(80, 150, 220);
-    stroke(60, 100, 160);  // Darker blue edges
+    fill(80 * humidityBrightness, 150 * humidityBrightness, 220 * humidityBrightness);
+    stroke(60 * humidityBrightness, 100 * humidityBrightness, 160 * humidityBrightness);
     strokeWeight(1);  // Reduced stroke weight for better performance
     box(cubeWidth, humidityHeight, cubeWidth);
     popMatrix();
 
-    // Temperature cube (orange) - aligned above "Temperature" label
+    // Temperature cube (orange) - aligned above "Temperature" label - brightness varies with value
     pushMatrix();
     translate(tempLabelX, baselineY - tempHeight/2, 0);  // Position center so bottom is at baseline
     rotateX(fixedRotX);
     rotateY(fixedRotY);
-    fill(255, 100, 50);
-    stroke(180, 60, 20);  // Darker orange edges for visibility
+    fill(255 * tempBrightness, 100 * tempBrightness, 50 * tempBrightness);
+    stroke(180 * tempBrightness, 60 * tempBrightness, 20 * tempBrightness);
     strokeWeight(1);  // Reduced stroke weight for better performance
     box(cubeWidth, tempHeight, cubeWidth);
     popMatrix();
 
-    // Light cube (yellow) - aligned above "Light" label
+    // Light cube (yellow) - aligned above "Light" label - brightness varies with value
     pushMatrix();
     translate(lightLabelX, baselineY - lightHeight/2, 0);  // Position center so bottom is at baseline
     rotateX(fixedRotX);
     rotateY(fixedRotY);
-    fill(255, 220, 80);
-    stroke(200, 160, 40);  // Darker yellow edges for visibility
+    fill(255 * lightBrightness, 220 * lightBrightness, 80 * lightBrightness);
+    stroke(200 * lightBrightness, 160 * lightBrightness, 40 * lightBrightness);
     strokeWeight(1);  // Reduced stroke weight for better performance
     box(cubeWidth, lightHeight, cubeWidth);
     popMatrix();
@@ -477,6 +483,85 @@ class HouseRegion {
     fill(255, 240, 150);
     textSize(13);
     text(nf(lightValue, 0, 0) + " lux", lightLabelX, labelY + 14);
+
+    // ========================================
+    // HEATMAP LEGEND (Right side)
+    // ========================================
+    float heatmapX = x + w - 120;
+    float heatmapY = y + 65;
+    float heatmapWidth = 100;
+    float heatmapHeight = 180;
+
+    // Heatmap background panel
+    fill(25, 30, 40, 200);
+    stroke(80);
+    strokeWeight(1);
+    rect(heatmapX, heatmapY, heatmapWidth, heatmapHeight, 5);
+
+    // Title
+    fill(200);
+    textAlign(CENTER, TOP);
+    textSize(11);
+    text("Value Scale", heatmapX + heatmapWidth/2, heatmapY + 8);
+
+    // Draw gradient bars for each sensor type
+    float barStartY = heatmapY + 30;
+    float barWidth = 25;
+    float barHeight = 120;
+    float barSpacing = 8;
+
+    // Calculate positions for 3 bars centered in the panel
+    float totalBarWidth = (barWidth * 3) + (barSpacing * 2);
+    float barStartX = heatmapX + (heatmapWidth - totalBarWidth) / 2;
+
+    // Humidity gradient bar (blue)
+    float humBarX = barStartX;
+    int gradientSteps = 40;  // More steps for smoother gradient
+    float stepHeight = barHeight / gradientSteps;
+    for (int i = 0; i < gradientSteps; i++) {
+      // Bottom = dark (low value), Top = bright (high value)
+      // Using wider brightness range (0.15 to 1.0) for more dramatic variation
+      float brightness = map(i, 0, gradientSteps - 1, 0.15, 1.0);
+      fill(80 * brightness, 150 * brightness, 220 * brightness);
+      noStroke();
+      rect(humBarX, barStartY + barHeight - (i + 1) * stepHeight, barWidth, stepHeight);
+    }
+    // Label
+    fill(200);
+    textAlign(CENTER, TOP);
+    textSize(9);
+    text("Hum", humBarX + barWidth/2, barStartY + barHeight + 3);
+
+    // Temperature gradient bar (orange)
+    float tempBarX = humBarX + barWidth + barSpacing;
+    for (int i = 0; i < gradientSteps; i++) {
+      float brightness = map(i, 0, gradientSteps - 1, 0.15, 1.0);
+      fill(255 * brightness, 100 * brightness, 50 * brightness);
+      noStroke();
+      rect(tempBarX, barStartY + barHeight - (i + 1) * stepHeight, barWidth, stepHeight);
+    }
+    // Label
+    fill(200);
+    text("Temp", tempBarX + barWidth/2, barStartY + barHeight + 3);
+
+    // Light gradient bar (yellow)
+    float lightBarX = tempBarX + barWidth + barSpacing;
+    for (int i = 0; i < gradientSteps; i++) {
+      float brightness = map(i, 0, gradientSteps - 1, 0.15, 1.0);
+      fill(255 * brightness, 220 * brightness, 80 * brightness);
+      noStroke();
+      rect(lightBarX, barStartY + barHeight - (i + 1) * stepHeight, barWidth, stepHeight);
+    }
+    // Label
+    fill(200);
+    text("Light", lightBarX + barWidth/2, barStartY + barHeight + 3);
+
+    // Add "High" and "Low" labels
+    fill(180);
+    textSize(9);
+    textAlign(RIGHT, CENTER);
+    text("High", heatmapX + 15, barStartY);
+    text("Low", heatmapX + 15, barStartY + barHeight);
 
     popStyle();
   }

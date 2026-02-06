@@ -111,34 +111,35 @@ void loadRecommendationData() {
     }
 
     // Set positions for zones (similar to house regions)
+    // All dimensions scaled to 50% to match the resized house image
     // JSON zones: 0=Living Room, 1=Bed Room, 2=Bath Room, 3=Kitchen Room
     // Map visual: 0=Living Room, 1=Kitchen (uses Bed Room data), 2=Bathroom (uses Bath Room data), 3=Bed Room (uses Kitchen Room data)
     if (zoneRecommendations.size() >= 4) {
       // Zone 0: Living Room (left side)
-      zoneRecommendations.get(0).x = houseImageX + 20;
-      zoneRecommendations.get(0).y = houseImageY + 20;
-      zoneRecommendations.get(0).width = 300;
-      zoneRecommendations.get(0).height = 460;
+      zoneRecommendations.get(0).x = houseImageX + 10;
+      zoneRecommendations.get(0).y = houseImageY + 10;
+      zoneRecommendations.get(0).width = 150;
+      zoneRecommendations.get(0).height = 230;
 
       // Zone 1: Bed Room data → Display as "Kitchen" (top center-right)
-      zoneRecommendations.get(1).x = houseImageX + 320;
-      zoneRecommendations.get(1).y = houseImageY + 20;
-      zoneRecommendations.get(1).width = 170;
-      zoneRecommendations.get(1).height = 240;
+      zoneRecommendations.get(1).x = houseImageX + 160;
+      zoneRecommendations.get(1).y = houseImageY + 10;
+      zoneRecommendations.get(1).width = 85;
+      zoneRecommendations.get(1).height = 120;
       zoneRecommendations.get(1).name = "Kitchen";  // Override display name
 
       // Zone 2: Bath Room data → Display as "Bathroom" (lower center-right)
-      zoneRecommendations.get(2).x = houseImageX + 320;
-      zoneRecommendations.get(2).y = houseImageY + 260;
-      zoneRecommendations.get(2).width = 170;
-      zoneRecommendations.get(2).height = 220;
+      zoneRecommendations.get(2).x = houseImageX + 160;
+      zoneRecommendations.get(2).y = houseImageY + 130;
+      zoneRecommendations.get(2).width = 85;
+      zoneRecommendations.get(2).height = 110;
       zoneRecommendations.get(2).name = "Bathroom";  // Override display name
 
       // Zone 3: Kitchen Room data → Display as "Bed Room" (far right)
-      zoneRecommendations.get(3).x = houseImageX + 490;
-      zoneRecommendations.get(3).y = houseImageY + 20;
-      zoneRecommendations.get(3).width = 180;
-      zoneRecommendations.get(3).height = 460;
+      zoneRecommendations.get(3).x = houseImageX + 245;
+      zoneRecommendations.get(3).y = houseImageY + 10;
+      zoneRecommendations.get(3).width = 90;
+      zoneRecommendations.get(3).height = 230;
       zoneRecommendations.get(3).name = "Bed Room";  // Override display name
     }
 

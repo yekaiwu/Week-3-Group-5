@@ -17,12 +17,14 @@ HouseRegion selectedRegion = null;
 int analyticsLocationIndex = 0;  // Index into regions array for analytics view
 
 // Tab system
-int currentTab = 0;  // 0 = House Map, 1 = Analytics, 2 = Recommendations
+int currentTab = 0;  // 0 = House Map, 1 = Analytics, 2 = Recommendations, 3 = Plant Info, 4 = 3D Room
 float tabY = 60;
 float tabHeight = 35;
 float tab1X = 20;
 float tab2X = 220;
 float tab3X = 420;
+float tab4X = 620;
+float tab5X = 820;
 float tabWidth = 180;
 
 // Timeframe selection (grouped together)
@@ -53,8 +55,8 @@ float viz3DX, viz3DY, viz3DWidth, viz3DHeight;  // 3D visualization area bounds
 PImage houseLayoutImage;
 float houseImageX = 50;
 float houseImageY = 120;
-float houseImageWidth = 700;
-float houseImageHeight = 500;
+float houseImageWidth = 350;  // Reduced to 50% (was 700)
+float houseImageHeight = 250;  // Reduced to 50% (was 500)
 
 /**
  * Setup function - runs once at start
@@ -81,20 +83,21 @@ public void setup() {
   regions = new HouseRegion[4];
 
   // Define regions with their clickable areas (mapped to floor plan)
+  // All dimensions scaled to 50% to match the resized house image
   // Living Room - large brown wooden floor area on the left side
-  regions[0] = new HouseRegion("Living Room", houseImageX + 20, houseImageY + 20, 300.0f, 460.0f,
+  regions[0] = new HouseRegion("Living Room", houseImageX + 10, houseImageY + 10, 150.0f, 230.0f,
                                 "sensor_data/synthetic_living_room_20260204_153610.csv");
 
   // Kitchen - top center-right area with blue tiles
-  regions[1] = new HouseRegion("Kitchen", houseImageX + 320, houseImageY + 20, 170.0f, 240.0f,
+  regions[1] = new HouseRegion("Kitchen", houseImageX + 160, houseImageY + 10, 85.0f, 120.0f,
                                 "sensor_data/synthetic_kitchen_20260204_160156.csv");
 
   // Bathroom - lower center-right area with blue tiles
-  regions[2] = new HouseRegion("Bathroom", houseImageX + 320, houseImageY + 260, 170.0f, 220.0f,
+  regions[2] = new HouseRegion("Bathroom", houseImageX + 160, houseImageY + 130, 85.0f, 110.0f,
                                 "sensor_data/synthetic_bathroom_20260204_160204.csv");
 
   // Bed Room - far right side with gray/blue tiles
-  regions[3] = new HouseRegion("Bed Room", houseImageX + 490, houseImageY + 20, 180.0f, 460.0f,
+  regions[3] = new HouseRegion("Bed Room", houseImageX + 245, houseImageY + 10, 90.0f, 230.0f,
                                 "sensor_data/synthetic_bedroom_20260204_160253.csv");
 
   // Load sensor data from CSV files for all regions
@@ -193,6 +196,10 @@ public void draw() {
     drawAnalyticsView();
   } else if (currentTab == 2) {
     drawRecommendationsView();
+  } else if (currentTab == 3) {
+    drawPlantInfoView();
+  } else if (currentTab == 4) {
+    drawRoom3DView();
   }
 }
 
@@ -285,6 +292,54 @@ public void drawTabs() {
   textAlign(CENTER, CENTER);
   textSize(15);
   text("Recommendations", tab3X + tabWidth/2, tabY + tabHeight/2 + 1);
+
+  // Tab 4: Plant Info
+  boolean tab4Hover = (mouseX >= tab4X && mouseX <= tab4X + tabWidth &&
+                       mouseY >= tabY && mouseY <= tabY + tabHeight);
+
+  if (currentTab == 3) {
+    fill(60, 120, 180);
+    stroke(100, 200, 255);
+    strokeWeight(2);
+  } else if (tab4Hover) {
+    fill(50, 80, 120);
+    stroke(100, 150, 200);
+    strokeWeight(1);
+  } else {
+    fill(30, 40, 60);
+    stroke(60);
+    strokeWeight(1);
+  }
+  rect(tab4X, tabY, tabWidth, tabHeight, 8, 8, 0, 0);
+
+  fill(currentTab == 3 ? 255 : 180);
+  textAlign(CENTER, CENTER);
+  textSize(15);
+  text("Plant Info", tab4X + tabWidth/2, tabY + tabHeight/2 + 1);
+
+  // Tab 5: 3D Room
+  boolean tab5Hover = (mouseX >= tab5X && mouseX <= tab5X + tabWidth &&
+                       mouseY >= tabY && mouseY <= tabY + tabHeight);
+
+  if (currentTab == 4) {
+    fill(60, 120, 180);
+    stroke(100, 200, 255);
+    strokeWeight(2);
+  } else if (tab5Hover) {
+    fill(50, 80, 120);
+    stroke(100, 150, 200);
+    strokeWeight(1);
+  } else {
+    fill(30, 40, 60);
+    stroke(60);
+    strokeWeight(1);
+  }
+  rect(tab5X, tabY, tabWidth, tabHeight, 8, 8, 0, 0);
+
+  fill(currentTab == 4 ? 255 : 180);
+  textAlign(CENTER, CENTER);
+  textSize(15);
+  text("3D Room", tab5X + tabWidth/2, tabY + tabHeight/2 + 1);
 
   popStyle();
 }
@@ -628,6 +683,10 @@ public void mousePressed() {
       currentTab = 1;
     } else if (mouseX >= tab3X && mouseX <= tab3X + tabWidth) {
       currentTab = 2;
+    } else if (mouseX >= tab4X && mouseX <= tab4X + tabWidth) {
+      currentTab = 3;
+    } else if (mouseX >= tab5X && mouseX <= tab5X + tabWidth) {
+      currentTab = 4;
     }
   }
 
@@ -696,6 +755,27 @@ public void mousePressed() {
     }
   }
 
+  // Check scrollbar in plant info tab
+  if (currentTab == 3) {
+    float listY = 120 + 120;  // titleY + 120
+    float listHeight = height - listY - 40;
+    float listX = 40;
+    float listWidth = width - 80;
+    float scrollbarX = listX + listWidth - 25;
+    float scrollbarY = listY + 10;
+    float scrollbarW = 15;
+    float scrollbarH = listHeight - 20;
+
+    if (handlePlantScrollbarClick(mouseX, mouseY, scrollbarX, scrollbarY, scrollbarW, scrollbarH)) {
+      isDraggingPlantScroll = true;
+    }
+  }
+
+  // Check 3D Room tab interactions
+  if (currentTab == 4) {
+    handleRoom3DMousePressed(mouseX, mouseY);
+  }
+
   // Check region clicks (only in house map view)
   if (currentTab == 0) {
     for (HouseRegion region : regions) {
@@ -737,12 +817,24 @@ public void mousePressed() {
  * Mouse dragged event
  */
 public void mouseDragged() {
+  // Handle 3D Room tab dragging
+  if (currentTab == 4) {
+    handleRoom3DDrag(mouseX, mouseY);
+  }
+  // Handle plant info scrollbar dragging
+  else if (isDraggingPlantScroll && currentTab == 3) {
+    float listY = 120 + 120;  // titleY + 120
+    float listHeight = height - listY - 40;
+    float scrollbarY = listY + 10;
+    float scrollbarH = listHeight - 20;
+    updatePlantScrollbarDrag(mouseY, scrollbarY, scrollbarH);
+  }
   // Handle recommendation slider dragging
-  if (draggingSlider && currentTab == 2) {
+  else if (draggingSlider && currentTab == 2) {
     handleRecommendationSliderDrag(mouseX, mouseY);
   }
   // Handle house map slider dragging
-  else if (draggingSlider && selectedRegion != null) {
+  else if (draggingSlider && selectedRegion != null && currentTab == 0) {
     float detailX = houseImageX + houseImageWidth + 30;
     float detailWidth = width - detailX - 30;
     float sliderXPos = detailX + 20;
@@ -750,8 +842,8 @@ public void mouseDragged() {
 
     updateSliderValue(sliderXPos, sliderW);
   }
-  // Handle 3D rotation dragging
-  else if (dragging3D && selectedRegion != null) {
+  // Handle 3D rotation dragging in house map view
+  else if (dragging3D && selectedRegion != null && currentTab == 0) {
     float dx = mouseX - prevMouseX3D;
     float dy = mouseY - prevMouseY3D;
 
@@ -773,6 +865,7 @@ public void mouseDragged() {
 public void mouseReleased() {
   draggingSlider = false;
   dragging3D = false;
+  isDraggingPlantScroll = false;
 }
 
 /**
@@ -800,5 +893,15 @@ public void updateSliderValue(float sliderX, float sliderW) {
   // Only update if the index changed (reduces unnecessary redraws)
   if (newIndex != selectedTimeIndex) {
     selectedTimeIndex = newIndex;
+  }
+}
+
+/**
+ * Mouse wheel event for scrolling plant list
+ */
+public void mouseWheel(MouseEvent event) {
+  if (currentTab == 3) {
+    float e = event.getCount();
+    handlePlantScroll(e * 30);  // 30 pixels per scroll step
   }
 }
