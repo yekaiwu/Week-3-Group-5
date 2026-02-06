@@ -5,7 +5,7 @@ Please place the following images in this folder (PlantHealthDashboard/data/):
 
 1. HOUSE LAYOUT IMAGE
    Filename: house_layout.png
-   Description: The floor plan showing Living Room, Kitchen, Bathroom, and Balcony
+   Description: The floor plan showing Living Room, Kitchen, Bathroom, and Bed Room
    *** YOU ALREADY HAVE THIS IMAGE ***
 
 2. PLANT IMAGES (60x60 pixels recommended):
@@ -27,7 +27,7 @@ Please place the following images in this folder (PlantHealthDashboard/data/):
 
    d) tomato_plant.png
       - Image of a tomato plant
-      - For Balcony
+      - For Bed Room
       - Optimal: 60-80% humidity, 20-30°C, 600-1000 lux
 
 NOTES:

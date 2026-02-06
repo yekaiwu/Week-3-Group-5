@@ -75,25 +75,25 @@ public void setup() {
     houseLayoutImage = null;
   }
 
-  // Initialize house regions with positions, names, plant types, and CSV file paths
+  // Initialize house regions with positions, names, and CSV file paths
   // Coordinates are mapped to the floor plan image
   regions = new HouseRegion[4];
 
   // Define regions with their clickable areas (mapped to floor plan)
   // Living Room - large brown wooden floor area on the left side
-  regions[0] = new HouseRegion("Living Room", houseImageX + 20, houseImageY + 20, 300.0f, 460.0f, "Rose",
+  regions[0] = new HouseRegion("Living Room", houseImageX + 20, houseImageY + 20, 300.0f, 460.0f,
                                 "sensor_data/synthetic_living_room_20260204_153610.csv");
 
   // Kitchen - top center-right area with blue tiles
-  regions[1] = new HouseRegion("Kitchen", houseImageX + 320, houseImageY + 20, 170.0f, 240.0f, "Banana",
+  regions[1] = new HouseRegion("Kitchen", houseImageX + 320, houseImageY + 20, 170.0f, 240.0f,
                                 "sensor_data/synthetic_kitchen_20260204_160156.csv");
 
   // Bathroom - lower center-right area with blue tiles
-  regions[2] = new HouseRegion("Bathroom", houseImageX + 320, houseImageY + 260, 170.0f, 220.0f, "Water Lily",
+  regions[2] = new HouseRegion("Bathroom", houseImageX + 320, houseImageY + 260, 170.0f, 220.0f,
                                 "sensor_data/synthetic_bathroom_20260204_160204.csv");
 
-  // Balcony - far right side with gray/blue tiles
-  regions[3] = new HouseRegion("Balcony", houseImageX + 490, houseImageY + 20, 180.0f, 460.0f, "Tomato Plant",
+  // Bed Room - far right side with gray/blue tiles
+  regions[3] = new HouseRegion("Bed Room", houseImageX + 490, houseImageY + 20, 180.0f, 460.0f,
                                 "sensor_data/synthetic_balcony_20260204_160253.csv");
 
   // Load sensor data from CSV files for all regions
@@ -203,7 +203,7 @@ public void drawTitleBar() {
   fill(255);
   textAlign(LEFT, TOP);
   textSize(28);
-  text("🌱 Plant Health Monitoring Dashboard", 20, 15);
+  text("Plant Health Monitoring Dashboard", 20, 15);
   popStyle();
 }
 
@@ -407,13 +407,8 @@ public void drawRegionDetailView() {
   textSize(20);
   text(selectedRegion.name, detailX + 20, detailY + 15);
 
-  // Plant type
-  fill(150, 200, 150);
-  textSize(14);
-  text("Plant: " + selectedRegion.plantType, detailX + 20, detailY + 45);
-
   // Timeframe selector (grouped above time slider)
-  float timeframeSelectorY = detailY + 70;
+  float timeframeSelectorY = detailY + 45;
   drawTimeframeSelector(detailX + 20, timeframeSelectorY);
 
   // Time slider with appropriate label based on timeframe
@@ -437,10 +432,6 @@ public void drawRegionDetailView() {
   viz3DHeight = squaresHeight;
 
   selectedRegion.draw3DGrowingSquares(viz3DX, viz3DY, viz3DWidth, viz3DHeight, selectedTimeIndex, rotationX, rotationY, rotationZ);
-
-  // Plant health prediction with gauges
-  float healthY = squaresY + squaresHeight + 15;
-  selectedRegion.drawPlantHealthWithGauges(detailX + 20, healthY, detailWidth - 40, selectedTimeIndex);
 
   popStyle();
 }

@@ -527,7 +527,7 @@ class HouseRegion {
     fill(150, 255, 150);
     textAlign(LEFT, TOP);
     textSize(15);
-    text("🌿 " + plantType, healthInfoX, healthInfoY);
+    text(plantType, healthInfoX, healthInfoY);
 
     // Get current values
     float humidity = humidityHistory[timeIndex];
@@ -795,7 +795,7 @@ class HouseRegion {
     fill(150, 255, 150);
     textAlign(LEFT, TOP);
     textSize(14);
-    text("🌿 " + plantType + " Health", textX, y + 12);
+    text(plantType + " Health", textX, y + 12);
 
     // Get current values
     float humidity = humidityHistory[timeIndex];

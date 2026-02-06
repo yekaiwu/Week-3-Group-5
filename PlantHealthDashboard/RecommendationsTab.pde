@@ -112,7 +112,7 @@ void loadRecommendationData() {
 
     // Set positions for zones (similar to house regions)
     // JSON zones: 0=Living Room, 1=Bed Room, 2=Bath Room, 3=Kitchen Room
-    // Map visual: 0=Living Room, 1=Kitchen (uses Bed Room data), 2=Bathroom (uses Bath Room data), 3=Balcony (uses Kitchen Room data)
+    // Map visual: 0=Living Room, 1=Kitchen (uses Bed Room data), 2=Bathroom (uses Bath Room data), 3=Bed Room (uses Kitchen Room data)
     if (zoneRecommendations.size() >= 4) {
       // Zone 0: Living Room (left side)
       zoneRecommendations.get(0).x = houseImageX + 20;
@@ -134,12 +134,12 @@ void loadRecommendationData() {
       zoneRecommendations.get(2).height = 220;
       zoneRecommendations.get(2).name = "Bathroom";  // Override display name
 
-      // Zone 3: Kitchen Room data → Display as "Balcony" (far right)
+      // Zone 3: Kitchen Room data → Display as "Bed Room" (far right)
       zoneRecommendations.get(3).x = houseImageX + 490;
       zoneRecommendations.get(3).y = houseImageY + 20;
       zoneRecommendations.get(3).width = 180;
       zoneRecommendations.get(3).height = 460;
-      zoneRecommendations.get(3).name = "Balcony";  // Override display name
+      zoneRecommendations.get(3).name = "Bed Room";  // Override display name
     }
 
     println("Loaded recommendations for " + zoneRecommendations.size() + " zones");
@@ -257,10 +257,33 @@ void drawZoneRecommendations() {
 
     cardsStartY += 25;
 
+    float currentY = cardsStartY;
+    float fullCardWidth = detailWidth - 40;
+    float halfCardWidth = (fullCardWidth - cardSpacing) / 2;
+
     for (int i = 0; i < min(5, hourlyData.recommendations.size()); i++) {
       PlantRecommendation rec = hourlyData.recommendations.get(i);
-      float cardY = cardsStartY + i * (cardHeight + cardSpacing);
-      drawPlantRecommendationCard(detailX + 20, cardY, detailWidth - 40, cardHeight, rec, i + 1);
+
+      if (i == 0) {
+        // First recommendation - full width, taller
+        float thisCardHeight = cardHeight + 10;
+        drawPlantRecommendationCard(detailX + 20, currentY, fullCardWidth, thisCardHeight, rec, i + 1);
+        currentY += thisCardHeight + cardSpacing + 5;
+      } else if (i == 1) {
+        // Second recommendation - left half
+        drawPlantRecommendationCard(detailX + 20, currentY, halfCardWidth, cardHeight, rec, i + 1);
+      } else if (i == 2) {
+        // Third recommendation - right half
+        drawPlantRecommendationCard(detailX + 20 + halfCardWidth + cardSpacing, currentY, halfCardWidth, cardHeight, rec, i + 1);
+        currentY += cardHeight + cardSpacing;
+      } else if (i == 3) {
+        // Fourth recommendation - left half
+        drawPlantRecommendationCard(detailX + 20, currentY, halfCardWidth, cardHeight, rec, i + 1);
+      } else if (i == 4) {
+        // Fifth recommendation - right half
+        drawPlantRecommendationCard(detailX + 20 + halfCardWidth + cardSpacing, currentY, halfCardWidth, cardHeight, rec, i + 1);
+        currentY += cardHeight + cardSpacing;
+      }
     }
   } else {
     fill(200, 100, 100);
@@ -277,26 +300,60 @@ void drawZoneRecommendations() {
 void drawPlantRecommendationCard(float x, float y, float w, float h, PlantRecommendation rec, int rank) {
   pushStyle();
 
-  // Card background
-  fill(40, 45, 55, 200);
-  stroke(100, 150, 200);
-  strokeWeight(1);
+  // Card background and styling based on rank
+  if (rank == 1) {
+    // Top recommendation - Golden background
+    fill(80, 70, 30, 220);  // Dark golden brown
+    stroke(255, 215, 0);  // Gold border
+    strokeWeight(3);
+  } else if (rank == 2 || rank == 3) {
+    // Second and third - Silver/lighter background
+    fill(55, 60, 70, 210);  // Light gray-blue
+    stroke(180, 180, 200);  // Silver border
+    strokeWeight(2);
+  } else {
+    // Fourth and fifth - Bronze/darker background
+    fill(40, 45, 55, 200);  // Dark blue-gray
+    stroke(139, 90, 43);  // Bronze border
+    strokeWeight(1);
+  }
   rect(x, y, w, h, 8);
 
-  // Rank badge
-  fill(60, 120, 180);
+  // Rank badge - color based on rank
+  if (rank == 1) {
+    fill(255, 215, 0);  // Gold badge
+  } else if (rank == 2 || rank == 3) {
+    fill(192, 192, 192);  // Silver badge
+  } else {
+    fill(205, 127, 50);  // Bronze badge
+  }
   noStroke();
   circle(x + 20, y + 20, 28);
-  fill(255);
+
+  // Rank number - dark text for visibility
+  fill(0);
   textAlign(CENTER, CENTER);
   textSize(14);
   text(str(rank), x + 20, y + 20);
 
-  // Plant name
-  fill(150, 255, 150);
+  // Plant name - brighter for top rank
+  if (rank == 1) {
+    fill(255, 255, 150);  // Bright yellow for top recommendation
+    textSize(16);  // Slightly larger
+  } else {
+    fill(150, 255, 150);  // Green for others
+    textSize(15);
+  }
   textAlign(LEFT, TOP);
-  textSize(15);
   text(rec.plantName, x + 40, y + 10);
+
+  // "TOP PICK" label for rank 1
+  if (rank == 1) {
+    fill(255, 215, 0);  // Gold
+    textAlign(RIGHT, TOP);
+    textSize(11);
+    text("TOP PICK", x + w - 10, y + 12);
+  }
 
   // Score bar
   float scoreBarX = x + 40;
@@ -316,17 +373,20 @@ void drawPlantRecommendationCard(float x, float y, float w, float h, PlantRecomm
 
   // Score text
   fill(200);
+  textAlign(LEFT, TOP);
   textSize(11);
   text("Compatibility: " + nf(rec.score, 0, 1) + "%", scoreBarX, scoreBarY + 12);
 
   // Sunlight needs
   fill(255, 220, 100);
+  textAlign(LEFT, TOP);
   textSize(11);
-  text("☀ Light: " + rec.sunlightNeeds, x + 10, y + h - 35);
+  text("Light: " + rec.sunlightNeeds, scoreBarX, scoreBarY + 28);
 
   // Watering needs
   fill(100, 180, 255);
-  text("💧 Water every " + rec.wateringDays + " day" + (rec.wateringDays > 1 ? "s" : ""), x + 10, y + h - 18);
+  textAlign(LEFT, TOP);
+  text("Water every " + rec.wateringDays + " day" + (rec.wateringDays > 1 ? "s" : ""), scoreBarX, scoreBarY + 45);
 
   popStyle();
 }

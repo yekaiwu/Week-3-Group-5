@@ -9,7 +9,7 @@ An interactive dashboard for monitoring plant health across different rooms in a
 - **5 Monitored Locations**:
   - Living Room (Peace Lily)
   - Kitchen (Herb Garden)
-  - Balcony (Tomato Plants)
+  - Bed Room (Tomato Plants)
   - Bedroom (Snake Plant)
   - Bathroom (Water Lily)
 
