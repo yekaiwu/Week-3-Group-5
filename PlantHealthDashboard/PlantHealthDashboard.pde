@@ -390,47 +390,20 @@ public void drawTimeframeSelector(float x, float y) {
 }
 
 /**
- * Draw house map view with clickable regions
+ * Draw house map view with clickable 3D house
  */
 public void drawHouseMapView() {
   pushStyle();
-
-  // Draw house layout
-  if (houseLayoutImage != null) {
-    image(houseLayoutImage, houseImageX, houseImageY, houseImageWidth, houseImageHeight);
-  } else {
-    // Draw placeholder rectangles for regions
-    fill(40, 45, 55);
-    stroke(80);
-    strokeWeight(1);
-    rect(houseImageX, houseImageY, houseImageWidth, houseImageHeight, 10);
-
-    // Draw each region as a rectangle
-    for (HouseRegion region : regions) {
-      if (region.isHovered || region == selectedRegion) {
-        fill(70, 100, 140, 150);
-        stroke(100, 200, 255);
-        strokeWeight(2);
-      } else {
-        fill(50, 60, 80, 100);
-        stroke(100);
-        strokeWeight(1);
-      }
-      rect(region.x, region.y, region.width, region.height, 8);
-
-      // Draw region label
-      fill(200);
-      textAlign(CENTER, CENTER);
-      textSize(14);
-      text(region.name, region.x + region.width/2, region.y + region.height/2);
-    }
-  }
 
   // Draw instruction text
   fill(180);
   textAlign(LEFT, TOP);
   textSize(16);
-  text("Click on a room to view detailed sensor data and plant health", houseImageX, houseImageY + houseImageHeight + 20);
+  text("Click on a room in the 3D house to view sensor data • Drag to rotate", houseImageX, houseImageY - 25);
+
+  // Draw clickable 3D house
+  float house3DHeight = 500;
+  drawClickable3DHouse(houseImageX, houseImageY, houseImageWidth + 350, house3DHeight);
 
   // If a region is selected, show its detailed view
   if (selectedRegion != null) {
@@ -446,7 +419,7 @@ public void drawHouseMapView() {
 public void drawRegionDetailView() {
   pushStyle();
 
-  float detailX = houseImageX + houseImageWidth + 30;
+  float detailX = houseImageX + houseImageWidth + 380;  // Adjusted for wider 3D house
   float detailY = houseImageY;
   float detailWidth = width - detailX - 30;
   float detailHeight = height - detailY - 30;  // Use full available height
@@ -776,22 +749,30 @@ public void mousePressed() {
     handleRoom3DMousePressed(mouseX, mouseY);
   }
 
-  // Check region clicks (only in house map view)
+  // Check interactions in house map view (3D house + detail panel)
   if (currentTab == 0) {
-    for (HouseRegion region : regions) {
-      if (region.contains(mouseX, mouseY)) {
-        selectedRegion = region;
-        selectedTimeIndex = 0;  // Reset to current time
-        break;
-      }
-    }
-
-    // Check slider click
+    // First check detail panel interactions if a region is selected
     if (selectedRegion != null) {
-      float detailX = houseImageX + houseImageWidth + 30;
+      float detailX = houseImageX + houseImageWidth + 380;  // Adjusted for wider 3D house
       float detailY = houseImageY;
       float detailWidth = width - detailX - 30;
-      float timeframeSelectorY = detailY + 70;
+      float timeframeSelectorY = detailY + 45;
+      float buttonStartX = detailX + 20 + 75;
+
+      // Check timeframe selector in detail panel
+      if (mouseY >= timeframeSelectorY && mouseY <= timeframeSelectorY + timeframeButtonHeight) {
+        for (int i = 0; i < 3; i++) {
+          float btnX = buttonStartX + i * (timeframeButtonWidth + 10);
+          if (mouseX >= btnX && mouseX <= btnX + timeframeButtonWidth) {
+            timeframeMode = i;
+            selectedTimeIndex = 0;
+            selectedRegion.updateTimeframeData(timeframeMode);
+            return; // Exit early if we clicked a button
+          }
+        }
+      }
+
+      // Check slider in detail panel
       float sliderStartY = timeframeSelectorY + timeframeButtonHeight + 15;
       float sliderXPos = detailX + 20;
       float sliderYPos = sliderStartY + 20;
@@ -801,15 +782,27 @@ public void mousePressed() {
           mouseY >= sliderYPos && mouseY <= sliderYPos + sliderHeight) {
         draggingSlider = true;
         updateSliderValue(sliderXPos, sliderW);
+        return; // Exit early
       }
-      // Check 3D visualization area click for rotation
-      else if (mouseX >= viz3DX && mouseX <= viz3DX + viz3DWidth &&
-               mouseY >= viz3DY && mouseY <= viz3DY + viz3DHeight) {
+
+      // Check 3D sensor visualization area in detail panel
+      float squaresY = sliderStartY + 20 + sliderHeight + 25;
+      viz3DX = detailX + 20;
+      viz3DY = squaresY;
+      viz3DWidth = detailWidth - 40;
+      viz3DHeight = 400;
+
+      if (mouseX >= viz3DX && mouseX <= viz3DX + viz3DWidth &&
+          mouseY >= viz3DY && mouseY <= viz3DY + viz3DHeight) {
         dragging3D = true;
         prevMouseX3D = mouseX;
         prevMouseY3D = mouseY;
+        return; // Exit early
       }
     }
+
+    // Check 3D house map interactions (clicking rooms or rotating)
+    handleHouseMap3DMousePressed(mouseX, mouseY);
   }
 }
 
@@ -833,29 +826,32 @@ public void mouseDragged() {
   else if (draggingSlider && currentTab == 2) {
     handleRecommendationSliderDrag(mouseX, mouseY);
   }
-  // Handle house map slider dragging
-  else if (draggingSlider && selectedRegion != null && currentTab == 0) {
-    float detailX = houseImageX + houseImageWidth + 30;
-    float detailWidth = width - detailX - 30;
-    float sliderXPos = detailX + 20;
-    float sliderW = detailWidth - 40;
+  // Handle house map view dragging
+  else if (currentTab == 0) {
+    // Handle house map 3D rotation
+    if (draggingHouseMap) {
+      handleHouseMap3DDrag(mouseX, mouseY);
+    }
+    // Handle house map slider dragging
+    else if (draggingSlider && selectedRegion != null) {
+      float detailX = houseImageX + houseImageWidth + 380;
+      float detailWidth = width - detailX - 30;
+      float sliderXPos = detailX + 20;
+      float sliderW = detailWidth - 40;
+      updateSliderValue(sliderXPos, sliderW);
+    }
+    // Handle 3D sensor visualization rotation in detail panel
+    else if (dragging3D && selectedRegion != null) {
+      float dx = mouseX - prevMouseX3D;
+      float dy = mouseY - prevMouseY3D;
 
-    updateSliderValue(sliderXPos, sliderW);
-  }
-  // Handle 3D rotation dragging in house map view
-  else if (dragging3D && selectedRegion != null && currentTab == 0) {
-    float dx = mouseX - prevMouseX3D;
-    float dy = mouseY - prevMouseY3D;
+      rotationY += dx * 0.01f;
+      rotationX += dy * 0.01f;
+      rotationX = constrain(rotationX, -PI/2, PI/2);
 
-    // Update rotation based on mouse movement
-    rotationY += dx * 0.01f;  // Horizontal rotation
-    rotationX += dy * 0.01f;  // Vertical rotation
-
-    // Constrain vertical rotation to prevent flipping
-    rotationX = constrain(rotationX, -PI/2, PI/2);
-
-    prevMouseX3D = mouseX;
-    prevMouseY3D = mouseY;
+      prevMouseX3D = mouseX;
+      prevMouseY3D = mouseY;
+    }
   }
 }
 
@@ -865,6 +861,7 @@ public void mouseDragged() {
 public void mouseReleased() {
   draggingSlider = false;
   dragging3D = false;
+  draggingHouseMap = false;
   isDraggingPlantScroll = false;
 }
 
@@ -872,11 +869,7 @@ public void mouseReleased() {
  * Mouse moved event - update hover states
  */
 public void mouseMoved() {
-  if (currentTab == 0) {
-    for (HouseRegion region : regions) {
-      region.checkHover(mouseX, mouseY);
-    }
-  } else if (currentTab == 2) {
+  if (currentTab == 2) {
     checkRecommendationZoneHover(mouseX, mouseY);
   }
 }

@@ -287,3 +287,347 @@ void handleRoom3DDrag(int mx, int my) {
     prevMouseY3D = my;
   }
 }
+
+// ============================================
+// CLICKABLE 3D HOUSE FOR HOUSE MAP TAB
+// ============================================
+
+// Fixed rotation for house map view (slightly angled for better view)
+float houseMapRotX = -0.4;
+float houseMapRotY = 0.3;
+float houseMapRotZ = 0;
+
+// Variables for mouse interaction in house map
+boolean draggingHouseMap = false;
+float prevMouseXHouseMap = 0;
+float prevMouseYHouseMap = 0;
+float houseMap3DX, houseMap3DY, houseMap3DWidth, houseMap3DHeight;
+
+/**
+ * Draw clickable 3D house for House Map tab
+ */
+void drawClickable3DHouse(float x, float y, float w, float h) {
+  pushMatrix();
+  pushStyle();
+
+  // Store bounds
+  houseMap3DX = x;
+  houseMap3DY = y;
+  houseMap3DWidth = w;
+  houseMap3DHeight = h;
+
+  // Set up 3D viewport
+  translate(x + w/2, y + h/2, 0);
+
+  // Apply rotation
+  rotateX(houseMapRotX);
+  rotateY(houseMapRotY);
+  rotateZ(houseMapRotZ);
+
+  // Scale for better view
+  float scaleSize = min(w, h) / 800.0;
+  scale(scaleSize);
+
+  // Draw floor
+  pushMatrix();
+  translate(0, 200, 0);
+  fill(60, 50, 45);
+  stroke(40);
+  strokeWeight(2);
+  box(700, 5, 500);
+  popMatrix();
+
+  // Wall thickness
+  float wallThickness = 20;
+  float wallHeight = 300;
+
+  // LIVING ROOM - Left side (large area)
+  pushMatrix();
+  translate(-175, 0, 0);
+
+  // Living room floor - CLICKABLE
+  boolean livingRoomHover = (selectedRegion != null && selectedRegion == regions[0]);
+  if (livingRoomHover) {
+    fill(179, 120, 80); // Brighter brown when selected
+  } else {
+    fill(139, 90, 60); // Brown wood
+  }
+  stroke(80, 50, 30);
+  strokeWeight(livingRoomHover ? 3 : 1);
+  pushMatrix();
+  translate(0, 200, 0);
+  box(300, 1, 460);
+  popMatrix();
+
+  // Living room label
+  fill(255, 200, 100);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  pushMatrix();
+  translate(0, 50, 0);
+  rotateX(HALF_PI);
+  text("Living Room", 0, 0);
+  popMatrix();
+
+  // Walls for living room
+  fill(200, 200, 200);
+  stroke(100);
+  strokeWeight(2);
+
+  // Left wall
+  pushMatrix();
+  translate(-150 - wallThickness/2, 0, 0);
+  box(wallThickness, wallHeight, 460);
+  popMatrix();
+
+  // Back wall
+  pushMatrix();
+  translate(0, 0, -230 - wallThickness/2);
+  box(300, wallHeight, wallThickness);
+  popMatrix();
+
+  popMatrix();
+
+  // KITCHEN - Top center-right
+  pushMatrix();
+  translate(70, 0, -110);
+
+  // Kitchen floor - CLICKABLE
+  boolean kitchenHover = (selectedRegion != null && selectedRegion == regions[1]);
+  if (kitchenHover) {
+    fill(150, 180, 210); // Brighter blue when selected
+  } else {
+    fill(120, 150, 180);
+  }
+  stroke(80, 100, 120);
+  strokeWeight(kitchenHover ? 3 : 1);
+  pushMatrix();
+  translate(0, 200, 0);
+  box(170, 1, 240);
+  popMatrix();
+
+  // Kitchen label
+  fill(255, 200, 100);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  pushMatrix();
+  translate(0, 50, 0);
+  rotateX(HALF_PI);
+  text("Kitchen", 0, 0);
+  popMatrix();
+
+  // Kitchen walls
+  fill(220, 220, 220);
+  stroke(100);
+  strokeWeight(2);
+
+  // Top wall
+  pushMatrix();
+  translate(0, 0, -120 - wallThickness/2);
+  box(170, wallHeight, wallThickness);
+  popMatrix();
+
+  popMatrix();
+
+  // BATHROOM - Lower center-right
+  pushMatrix();
+  translate(70, 0, 120);
+
+  // Bathroom floor - CLICKABLE
+  boolean bathroomHover = (selectedRegion != null && selectedRegion == regions[2]);
+  if (bathroomHover) {
+    fill(170, 190, 220); // Brighter blue when selected
+  } else {
+    fill(140, 160, 190);
+  }
+  stroke(90, 110, 130);
+  strokeWeight(bathroomHover ? 3 : 1);
+  pushMatrix();
+  translate(0, 200, 0);
+  box(170, 1, 220);
+  popMatrix();
+
+  // Bathroom label
+  fill(255, 200, 100);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  pushMatrix();
+  translate(0, 50, 0);
+  rotateX(HALF_PI);
+  text("Bathroom", 0, 0);
+  popMatrix();
+
+  popMatrix();
+
+  // BEDROOM - Right side
+  pushMatrix();
+  translate(245, 0, 0);
+
+  // Bedroom floor - CLICKABLE
+  boolean bedroomHover = (selectedRegion != null && selectedRegion == regions[3]);
+  if (bedroomHover) {
+    fill(190, 195, 205); // Brighter gray when selected
+  } else {
+    fill(160, 165, 175);
+  }
+  stroke(100, 105, 115);
+  strokeWeight(bedroomHover ? 3 : 1);
+  pushMatrix();
+  translate(0, 200, 0);
+  box(180, 1, 460);
+  popMatrix();
+
+  // Bedroom label
+  fill(255, 200, 100);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  pushMatrix();
+  translate(0, 50, 0);
+  rotateX(HALF_PI);
+  text("Bedroom", 0, 0);
+  popMatrix();
+
+  // Bedroom walls
+  fill(200, 200, 200);
+  stroke(100);
+  strokeWeight(2);
+
+  // Right wall
+  pushMatrix();
+  translate(90 + wallThickness/2, 0, 0);
+  box(wallThickness, wallHeight, 460);
+  popMatrix();
+
+  // Back wall
+  pushMatrix();
+  translate(0, 0, -230 - wallThickness/2);
+  box(180, wallHeight, wallThickness);
+  popMatrix();
+
+  popMatrix();
+
+  // OUTER WALLS
+  fill(220, 220, 220);
+  stroke(100);
+  strokeWeight(2);
+
+  // Front wall
+  pushMatrix();
+  translate(0, 0, 250);
+  box(700, wallHeight, wallThickness);
+  popMatrix();
+
+  // Add dividing walls between rooms
+  fill(200, 200, 200);
+
+  // Wall between living room and kitchen/bathroom/bedroom
+  pushMatrix();
+  translate(-25, 0, 0);
+  box(wallThickness, wallHeight, 500);
+  popMatrix();
+
+  // Wall between kitchen and bathroom
+  pushMatrix();
+  translate(70, 0, 10);
+  box(170, wallHeight, wallThickness);
+  popMatrix();
+
+  // Wall between kitchen/bathroom and bedroom
+  pushMatrix();
+  translate(155, 0, 0);
+  box(wallThickness, wallHeight, 500);
+  popMatrix();
+
+  popStyle();
+  popMatrix();
+}
+
+/**
+ * Check if mouse click is on a room in the 3D house map
+ * Returns the index of the clicked room, or -1 if no room clicked
+ */
+int checkHouseMapRoomClick(int mx, int my) {
+  // Simple 2D approximation based on screen regions
+  // This is a rough mapping - for precise 3D picking you'd need ray casting
+
+  if (mx < houseMap3DX || mx > houseMap3DX + houseMap3DWidth ||
+      my < houseMap3DY || my > houseMap3DY + houseMap3DHeight) {
+    return -1; // Outside the 3D area
+  }
+
+  // Normalize coordinates to 0-1 range
+  float normX = (mx - houseMap3DX) / houseMap3DWidth;
+  float normY = (my - houseMap3DY) / houseMap3DHeight;
+
+  // Approximate regions based on the 3D layout projection
+  // These values are tuned for the default rotation angle
+
+  // Living Room - left portion
+  if (normX < 0.4 && normY > 0.2 && normY < 0.9) {
+    return 0; // Living Room
+  }
+
+  // Kitchen - upper middle-right
+  if (normX > 0.4 && normX < 0.65 && normY > 0.15 && normY < 0.45) {
+    return 1; // Kitchen
+  }
+
+  // Bathroom - lower middle-right
+  if (normX > 0.4 && normX < 0.65 && normY > 0.5 && normY < 0.75) {
+    return 2; // Bathroom
+  }
+
+  // Bedroom - right portion
+  if (normX > 0.65 && normY > 0.2 && normY < 0.9) {
+    return 3; // Bedroom
+  }
+
+  return -1; // No room clicked
+}
+
+/**
+ * Handle mouse press in house map 3D view
+ */
+boolean handleHouseMap3DMousePressed(int mx, int my) {
+  // Check if clicking in 3D visualization area
+  if (mx >= houseMap3DX && mx <= houseMap3DX + houseMap3DWidth &&
+      my >= houseMap3DY && my <= houseMap3DY + houseMap3DHeight) {
+
+    // Check if clicking on a room
+    int roomIndex = checkHouseMapRoomClick(mx, my);
+    if (roomIndex >= 0 && roomIndex < regions.length) {
+      selectedRegion = regions[roomIndex];
+      selectedTimeIndex = 0;
+      println("Selected room: " + selectedRegion.name);
+      return true;
+    }
+
+    // If not clicking on a room, enable rotation
+    draggingHouseMap = true;
+    prevMouseXHouseMap = mx;
+    prevMouseYHouseMap = my;
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Handle mouse drag in house map 3D view
+ */
+void handleHouseMap3DDrag(int mx, int my) {
+  if (draggingHouseMap) {
+    float dx = mx - prevMouseXHouseMap;
+    float dy = my - prevMouseYHouseMap;
+
+    // Update rotation based on mouse movement
+    houseMapRotY += dx * 0.01;  // Horizontal rotation
+    houseMapRotX += dy * 0.01;  // Vertical rotation
+
+    // Constrain vertical rotation to prevent flipping
+    houseMapRotX = constrain(houseMapRotX, -PI/2, PI/2);
+
+    prevMouseXHouseMap = mx;
+    prevMouseYHouseMap = my;
+  }
+}

@@ -454,35 +454,52 @@ class HouseRegion {
     box(cubeWidth, lightHeight, cubeWidth);
     popMatrix();
 
-    // Disable lights for 2D text rendering
-    noLights();
-    hint(DISABLE_DEPTH_TEST);
+    // Draw 3D text labels below cubes (rotated to be readable from top view)
+    // Keep depth test enabled so text is part of 3D scene
+    textAlign(CENTER, CENTER);
 
-    // Draw labels and values below cubes (2D overlay)
-    // Humidity label and value
+    // Humidity label and value - drawn in 3D space
+    pushMatrix();
+    translate(humidityLabelX, baselineY + 25, 0);  // Position below cube
+    rotateX(-HALF_PI);  // Rotate to lie flat (readable from top)
+    rotateZ(fixedRotY);  // Counter-rotate to face forward
     fill(200);
-    textAlign(CENTER, TOP);
     textSize(11);
-    text("Humidity", humidityLabelX, labelY);
+    text("Humidity", 0, -7);
     fill(100, 200, 255);
     textSize(13);
-    text(nf(humidityValue, 0, 1) + "%", humidityLabelX, labelY + 14);
+    text(nf(humidityValue, 0, 1) + "%", 0, 7);
+    popMatrix();
 
-    // Temperature label and value
+    // Temperature label and value - drawn in 3D space
+    pushMatrix();
+    translate(tempLabelX, baselineY + 25, 0);  // Position below cube
+    rotateX(-HALF_PI);  // Rotate to lie flat (readable from top)
+    rotateZ(fixedRotY);  // Counter-rotate to face forward
     fill(200);
     textSize(11);
-    text("Temperature", tempLabelX, labelY);
+    text("Temperature", 0, -7);
     fill(255, 150, 100);
     textSize(13);
-    text(nf(tempValue, 0, 1) + "°C", tempLabelX, labelY + 14);
+    text(nf(tempValue, 0, 1) + "°C", 0, 7);
+    popMatrix();
 
-    // Light label and value
+    // Light label and value - drawn in 3D space
+    pushMatrix();
+    translate(lightLabelX, baselineY + 25, 0);  // Position below cube
+    rotateX(-HALF_PI);  // Rotate to lie flat (readable from top)
+    rotateZ(fixedRotY);  // Counter-rotate to face forward
     fill(200);
     textSize(11);
-    text("Light", lightLabelX, labelY);
+    text("Light", 0, -7);
     fill(255, 240, 150);
     textSize(13);
-    text(nf(lightValue, 0, 0) + " lux", lightLabelX, labelY + 14);
+    text(nf(lightValue, 0, 0) + " lux", 0, 7);
+    popMatrix();
+
+    // Disable lights and depth test for 2D UI elements (legend)
+    noLights();
+    hint(DISABLE_DEPTH_TEST);
 
     // ========================================
     // HEATMAP LEGEND (Right side)
